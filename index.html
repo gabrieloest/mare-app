@@ -5,29 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Maré — Ciclo, Libido & Bem-Estar Íntimo</title>
   <meta name="description" content="Rastreador privado de ciclo menstrual, libido e bem-estar íntimo. Mapeie suas ondas hormonais com total privacidade." />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#161018" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Maré" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='44' fill='%230f172a'/%3E%3Cpath d='M24 108c24-28 48-28 72 0s48 28 72 0' fill='none' stroke='%2310b981' stroke-width='14' stroke-linecap='round'/%3E%3Cpath d='M24 138c24-28 48-28 72 0s48 28 72 0' fill='none' stroke='%2334d399' stroke-width='10' stroke-linecap='round' opacity='0.6'/%3E%3Ccircle cx='96' cy='58' r='14' fill='%2310b981'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='44' fill='%23161018'/%3E%3Cpath d='M24 108c24-28 48-28 72 0s48 28 72 0' fill='none' stroke='%23e07a5f' stroke-width='14' stroke-linecap='round'/%3E%3Cpath d='M24 138c24-28 48-28 72 0s48 28 72 0' fill='none' stroke='%23f4a261' stroke-width='10' stroke-linecap='round' opacity='0.65'/%3E%3Ccircle cx='96' cy='58' r='14' fill='%23e07a5f'/%3E%3C/svg%3E" />
 
   <style>
     :root {
-      --bg: #0f172a;
-      --bg-elevated: #1e293b;
-      --bg-card: #162033;
-      --border: #334155;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent: #10b981;
-      --accent-soft: rgba(16, 185, 129, 0.16);
-      --accent-hover: #059669;
-      --menstrual: #f43f5e;
-      --follicular: #38bdf8;
-      --ovulatory: #10b981;
-      --luteal: #a78bfa;
+      --bg: #161018;
+      --bg-elevated: #2d2131;
+      --bg-card: #211824;
+      --border: #433249;
+      --text: #faf5f7;
+      --text-muted: #b8a6b9;
+      --accent: #e07a5f;
+      --accent-soft: rgba(224, 122, 95, 0.18);
+      --accent-hover: #d16649;
+      --accent-ink: #1f0d0a;
+      --menstrual: #e11d48;
+      --follicular: #f4a261;
+      --ovulatory: #e07a5f;
+      --luteal: #c084fc;
       --warning: #f59e0b;
       --radius: 16px;
       --safe-bottom: env(safe-area-inset-bottom, 16px);
@@ -69,7 +70,7 @@
       padding: 8px 0 18px;
       position: sticky;
       top: 0;
-      background: rgba(15, 23, 42, 0.94);
+      background: rgba(22, 16, 24, 0.92);
       backdrop-filter: blur(12px);
       z-index: 20;
     }
@@ -85,7 +86,7 @@
       height: 34px;
       border-radius: 10px;
       background: var(--accent-soft);
-      border: 1px solid rgba(16, 185, 129, 0.35);
+      border: 1px solid rgba(224, 122, 95, 0.4);
       display: grid;
       place-items: center;
       color: var(--accent);
@@ -126,7 +127,7 @@
 
     .btn-pill.accent {
       background: var(--accent);
-      color: #042f2e;
+      color: var(--accent-ink);
       border-color: var(--accent);
     }
 
@@ -177,7 +178,7 @@
     }
 
     .wave-hero {
-      background: linear-gradient(145deg, #162238 0%, #0f172a 100%);
+      background: linear-gradient(145deg, #2a1b2e 0%, #161018 100%);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 20px 16px;
@@ -248,8 +249,8 @@
 
     .pred-pill {
       font-size: 0.74rem;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(250, 245, 247, 0.06);
+      border: 1px solid rgba(250, 245, 247, 0.1);
       padding: 4px 8px;
       border-radius: 8px;
       color: var(--text);
@@ -323,9 +324,9 @@
     }
 
     .chip.menstrual.active {
-      background: rgba(244, 63, 94, 0.18);
+      background: rgba(225, 29, 72, 0.22);
       border-color: var(--menstrual);
-      color: #fecdd3;
+      color: #ffe4e6;
     }
 
     .field-group {
@@ -355,7 +356,7 @@
     .btn-primary {
       width: 100%;
       background: var(--accent);
-      color: #042f2e;
+      color: var(--accent-ink);
       border: none;
       padding: 13px;
       border-radius: 12px;
@@ -376,8 +377,8 @@
     }
 
     .climate-banner {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(56, 189, 248, 0.12));
-      border: 1px solid rgba(16, 185, 129, 0.35);
+      background: linear-gradient(135deg, rgba(224, 122, 95, 0.22), rgba(192, 132, 252, 0.14));
+      border: 1px solid rgba(224, 122, 95, 0.42);
       border-radius: 18px;
       padding: 16px;
       margin-bottom: 14px;
@@ -426,7 +427,7 @@
       justify-content: space-between;
       gap: 12px;
       padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(250, 245, 247, 0.08);
       font-size: 0.84rem;
     }
 
@@ -478,7 +479,7 @@
       font-size: 0.82rem;
       cursor: pointer;
       position: relative;
-      background: rgba(255,255,255,0.02);
+      background: rgba(250, 245, 247, 0.03);
       border: 1px solid transparent;
     }
 
@@ -494,13 +495,13 @@
 
     .cal-day.selected {
       background: var(--bg-elevated);
-      border-color: #fff;
+      border-color: var(--text);
     }
 
     .cal-day.period {
-      background: rgba(244, 63, 94, 0.25);
+      background: rgba(225, 29, 72, 0.28);
       color: #ffe4e6;
-      border-color: rgba(244, 63, 94, 0.5);
+      border-color: rgba(225, 29, 72, 0.55);
     }
 
     .cal-day.predicted-period {
@@ -508,8 +509,8 @@
     }
 
     .cal-day.fertile {
-      background: rgba(16, 185, 129, 0.16);
-      color: #a7f3d0;
+      background: rgba(224, 122, 95, 0.18);
+      color: #ffd6cc;
     }
 
     .cal-dots {
@@ -552,7 +553,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(15, 23, 42, 0.96);
+      background: rgba(22, 16, 24, 0.95);
       backdrop-filter: blur(14px);
       border-top: 1px solid var(--border);
       display: flex;
@@ -647,7 +648,7 @@
       left: 50%;
       transform: translateX(-50%) translateY(-80px);
       background: var(--accent);
-      color: #042f2e;
+      color: var(--accent-ink);
       font-weight: 700;
       font-size: 0.84rem;
       padding: 10px 18px;
@@ -663,9 +664,9 @@
 
     #runtime-error-box {
       display: none;
-      background: rgba(244, 63, 94, 0.12);
-      border: 1px solid rgba(244, 63, 94, 0.5);
-      color: #fecdd3;
+      background: rgba(225, 29, 72, 0.14);
+      border: 1px solid rgba(225, 29, 72, 0.5);
+      color: #ffe4e6;
       border-radius: var(--radius);
       padding: 14px;
       margin-bottom: 14px;
@@ -675,7 +676,7 @@
     @media print {
       body {
         background: #ffffff !important;
-        color: #0f172a !important;
+        color: #161018 !important;
         padding: 0 !important;
       }
       header, .bottom-nav, .no-print, #runtime-error-box {
@@ -690,13 +691,13 @@
       .card {
         background: #ffffff !important;
         border: 1px solid #cbd5e1 !important;
-        color: #0f172a !important;
+        color: #161018 !important;
         break-inside: avoid;
       }
       .print-only-header {
         display: block !important;
         margin-bottom: 16px;
-        border-bottom: 2px solid #0f172a;
+        border-bottom: 2px solid #161018;
         padding-bottom: 8px;
       }
     }
@@ -806,8 +807,8 @@
         <div class="wave-grid">
           <div class="cycle-ring">
             <svg viewBox="0 0 112 112">
-              <circle cx="56" cy="56" r="46" fill="none" stroke="#1e293b" stroke-width="10"/>
-              <circle id="cycle-progress-ring" cx="56" cy="56" r="46" fill="none" stroke="#10b981" stroke-width="10" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="200"/>
+              <circle cx="56" cy="56" r="46" fill="none" stroke="#2d2131" stroke-width="10"/>
+              <circle id="cycle-progress-ring" cx="56" cy="56" r="46" fill="none" stroke="#e07a5f" stroke-width="10" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="200"/>
             </svg>
             <div class="cycle-ring-center">
               <div class="cycle-day-num" id="hero-cycle-day">Dia 1</div>
@@ -815,7 +816,7 @@
             </div>
           </div>
           <div>
-            <div id="hero-phase-badge" class="phase-tag" style="background:rgba(16,185,129,0.18); color:#10b981;">
+            <div id="hero-phase-badge" class="phase-tag" style="background:rgba(224,122,95,0.2); color:#e07a5f;">
               Fase Folicular
             </div>
             <p class="phase-desc" id="hero-phase-desc">
@@ -824,7 +825,7 @@
             <div class="prediction-pills" id="hero-predictions"></div>
           </div>
         </div>
-        <div id="contraceptive-banner" style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08); font-size:0.76rem; color:var(--text-muted); display:none;"></div>
+        <div id="contraceptive-banner" style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(250,245,247,0.08); font-size:0.76rem; color:var(--text-muted); display:none;"></div>
       </div>
 
       <div class="card">
@@ -1045,7 +1046,7 @@
         <div class="legend">
           <span><i class="dot" style="background:var(--menstrual)"></i> Menstruação</span>
           <span><i class="dot" style="background:var(--accent)"></i> Janela Fértil</span>
-          <span><i class="dot" style="background:#38bdf8"></i> Registro de Libido</span>
+          <span><i class="dot" style="background:var(--follicular)"></i> Registro de Libido</span>
         </div>
       </div>
 
@@ -1074,7 +1075,7 @@
         </div>
         <div class="chart-box" id="libido-chart-container"></div>
         <p style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">
-          Barras coloridas indicam a fase estimada do ciclo no dia do registro; a linha verde mostra a intensidade da libido (1 a 5).
+          Barras coloridas indicam a fase estimada do ciclo no dia do registro; a linha terracota mostra a intensidade da libido (1 a 5).
         </p>
       </div>
 
@@ -1128,7 +1129,7 @@
           <label class="field-label">Lembrete diário de contraceptivo / check-in</label>
           <input type="text" id="set-reminder" data-sync-settings="true" placeholder="Ex: 21:00 — Pílula / Check-in" />
         </div>
-        <p id="contraceptive-info-box" style="font-size:0.78rem; color:var(--text-muted); background:rgba(255,255,255,0.03); padding:10px; border-radius:10px;"></p>
+        <p id="contraceptive-info-box" style="font-size:0.78rem; color:var(--text-muted); background:rgba(250,245,247,0.04); padding:10px; border-radius:10px;"></p>
       </div>
 
       <div class="card">
@@ -1172,7 +1173,7 @@
         <div style="border-top:1px solid var(--border); padding-top:12px; margin-top:12px; font-size:0.75rem; color:var(--text-muted);">
           <strong>Compromisso de Privacidade:</strong> Zero rastreadores, zero venda ou compartilhamento de dados íntimos. Todos os registros ficam exclusivamente no <code>localStorage</code> deste dispositivo.
           <div style="margin-top:10px;">
-            <button type="button" class="btn-secondary" style="color:var(--menstrual); border-color:rgba(244,63,94,0.4);" data-action="wipe-data">Apagar todos os dados locais</button>
+            <button type="button" class="btn-secondary" style="color:var(--menstrual); border-color:rgba(225,29,72,0.45);" data-action="wipe-data">Apagar todos os dados locais</button>
           </div>
         </div>
       </div>
@@ -1349,14 +1350,14 @@
 
       let phaseKey = 'follicular';
       let phaseName = 'Fase Folicular';
-      let phaseColor = '#38bdf8';
+      let phaseColor = '#f4a261';
       let phaseDesc = 'Estrogênio em elevação gradual; tendência de melhora na disposição e clareza mental.';
 
       if (isHormonalSuppressed) {
         if (cycleDay <= 5) {
           phaseKey = 'menstrual';
           phaseName = 'Pausa / Sangramento de Privação';
-          phaseColor = '#f43f5e';
+          phaseColor = '#e11d48';
           phaseDesc = 'Sangramento causado pela queda dos hormônios sintéticos do método contraceptivo.';
         } else {
           phaseName = 'Fase Estável (Método Hormonal)';
@@ -1365,7 +1366,7 @@
       } else if (cycleDay <= 5) {
         phaseKey = 'menstrual';
         phaseName = 'Fase Menstrual';
-        phaseColor = '#f43f5e';
+        phaseColor = '#e11d48';
         phaseDesc = 'Queda de estrogênio e progesterona. Período natural de recolhimento e menor energia física.';
       } else if (cycleDay < fertileStart) {
         phaseName = 'Fase Folicular';
@@ -1373,12 +1374,12 @@
       } else if (cycleDay <= fertileEnd) {
         phaseKey = 'ovulatory';
         phaseName = 'Fase Ovulatória / Janela Fértil';
-        phaseColor = '#10b981';
+        phaseColor = '#e07a5f';
         phaseDesc = 'Pico de estrogênio e testosterona. Frequentemente associada ao ápice da libido e energia.';
       } else {
         phaseKey = 'luteal';
         phaseName = 'Fase Lútea';
-        phaseColor = '#a78bfa';
+        phaseColor = '#c084fc';
         phaseDesc = 'Predomínio de progesterona. Pode haver oscilação de humor, sensibilidade física e variação no desejo.';
       }
 
@@ -1418,7 +1419,7 @@
       const badge = document.getElementById('hero-phase-badge');
       badge.textContent = state.settings.discreetMode === 'discreet' ? `Etapa ${analysis.cycleDay}` : analysis.phaseName;
       badge.style.color = analysis.phaseColor;
-      badge.style.background = `${analysis.phaseColor}26`;
+      badge.style.background = `${analysis.phaseColor}29`;
 
       document.getElementById('hero-phase-desc').textContent = state.settings.discreetMode === 'discreet'
         ? 'Acompanhamento diário de bem-estar e equilíbrio.'
@@ -1623,8 +1624,8 @@
         }
 
         const dotsHtml = [];
-        if (entry?.libido > 0) dotsHtml.push(`<i class="dot" style="background:#38bdf8"></i>`);
-        if (entryTags.length > 0) dotsHtml.push(`<i class="dot" style="background:#a78bfa"></i>`);
+        if (entry?.libido > 0) dotsHtml.push(`<i class="dot" style="background:#f4a261"></i>`);
+        if (entryTags.length > 0) dotsHtml.push(`<i class="dot" style="background:#c084fc"></i>`);
         if (hasPlan) dotsHtml.push(`<i class="dot" style="background:#f59e0b"></i>`);
 
         cell.innerHTML = `<span>${d}</span><div class="cal-dots">${dotsHtml.join('')}</div>`;
@@ -1677,25 +1678,25 @@
           const entry = state.entries[d] || {};
           const analysis = getCycleAnalysis(d);
           const x = sortedDates.length === 1 ? width / 2 : padLeft + i * stepX;
-          bars += `<rect x="${x - 10}" y="12" width="20" height="${plotH}" rx="4" fill="${analysis.phaseColor}" opacity="0.18" />`;
+          bars += `<rect x="${x - 10}" y="12" width="20" height="${plotH}" rx="4" fill="${analysis.phaseColor}" opacity="0.2" />`;
           if (entry.libido > 0) {
             const y = 12 + plotH - ((entry.libido - 1) / 4) * (plotH - 12);
             points.push({ x, y });
           }
-          labels += `<text x="${x}" y="${height - 6}" fill="#94a3b8" font-size="9" text-anchor="middle">${d.slice(8, 10)}/${d.slice(5, 7)}</text>`;
+          labels += `<text x="${x}" y="${height - 6}" fill="#b8a6b9" font-size="9" text-anchor="middle">${d.slice(8, 10)}/${d.slice(5, 7)}</text>`;
         });
 
-        const polyline = points.length ? `<polyline fill="none" stroke="#10b981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" points="${points.map(p => `${p.x},${p.y}`).join(' ')}" />` : '';
-        const dots = points.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#10b981" stroke="#0f172a" stroke-width="1.5" />`).join('');
+        const polyline = points.length ? `<polyline fill="none" stroke="#e07a5f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" points="${points.map(p => `${p.x},${p.y}`).join(' ')}" />` : '';
+        const dots = points.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#e07a5f" stroke="#161018" stroke-width="1.5" />`).join('');
 
         chartContainer.innerHTML = `
           <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-            <line x1="${padLeft}" y1="12" x2="${width - 10}" y2="12" stroke="#334155" stroke-dasharray="3"/>
-            <line x1="${padLeft}" y1="${12 + plotH / 2}" x2="${width - 10}" y2="${12 + plotH / 2}" stroke="#334155" stroke-dasharray="3"/>
-            <line x1="${padLeft}" y1="${12 + plotH}" x2="${width - 10}" y2="${12 + plotH}" stroke="#334155"/>
-            <text x="8" y="16" fill="#94a3b8" font-size="9">5</text>
-            <text x="8" y="${16 + plotH / 2}" fill="#94a3b8" font-size="9">3</text>
-            <text x="8" y="${12 + plotH}" fill="#94a3b8" font-size="9">1</text>
+            <line x1="${padLeft}" y1="12" x2="${width - 10}" y2="12" stroke="#433249" stroke-dasharray="3"/>
+            <line x1="${padLeft}" y1="${12 + plotH / 2}" x2="${width - 10}" y2="${12 + plotH / 2}" stroke="#433249" stroke-dasharray="3"/>
+            <line x1="${padLeft}" y1="${12 + plotH}" x2="${width - 10}" y2="${12 + plotH}" stroke="#433249"/>
+            <text x="8" y="16" fill="#b8a6b9" font-size="9">5</text>
+            <text x="8" y="${16 + plotH / 2}" fill="#b8a6b9" font-size="9">3</text>
+            <text x="8" y="${12 + plotH}" fill="#b8a6b9" font-size="9">1</text>
             ${bars}${polyline}${dots}${labels}
           </svg>
         `;
@@ -1763,7 +1764,6 @@
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
         return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
       }
-      // Fallback determinístico caso a página seja aberta em contexto não-HTTPS local
       let h = 2166136261;
       for (let i = 0; i < text.length; i++) {
         h ^= text.charCodeAt(i);
