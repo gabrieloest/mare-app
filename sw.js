@@ -1,9 +1,11 @@
-const CACHE_NAME = 'mare-app-cache-v7';
+const CACHE_NAME = 'mare-app-cache-v8';
 const BASE_PATH = '/mare-app';
 
 const ASSETS_TO_CACHE = [
   `${BASE_PATH}/`,
   `${BASE_PATH}/index.html`,
+  `${BASE_PATH}/styles.css`,
+  `${BASE_PATH}/app.js`,
   `${BASE_PATH}/manifest.json`
 ];
 
@@ -30,7 +32,6 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  // Nunca intercepta nem armazena em cache chamadas ao Firebase Realtime Database
   if (
     event.request.url.includes('firebaseio.com') ||
     event.request.url.includes('firebasedatabase.app')

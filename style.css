@@ -1,0 +1,781 @@
+:root {
+  --bg: #161018;
+  --bg-elevated: #2d2131;
+  --bg-card: #211824;
+  --border: #433249;
+  --text: #faf5f7;
+  --text-muted: #b8a6b9;
+  --accent: #e07a5f;
+  --accent-soft: rgba(224, 122, 95, 0.18);
+  --accent-hover: #d16649;
+  --accent-ink: #1f0d0a;
+  --menstrual: #e11d48;
+  --follicular: #f4a261;
+  --ovulatory: #e07a5f;
+  --luteal: #c084fc;
+  --warning: #f59e0b;
+  --success: #34d399;
+  --radius: 16px;
+  --safe-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  padding-bottom: calc(84px + var(--safe-bottom));
+}
+
+body.partner-mode {
+  padding-bottom: 32px;
+}
+
+body.partner-mode .bottom-nav {
+  display: none !important;
+}
+
+button, input, select, textarea, .chip, .cal-day {
+  touch-action: manipulation;
+}
+
+.app-shell {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px 16px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0 18px;
+  position: sticky;
+  top: 0;
+  background: rgba(22, 16, 24, 0.92);
+  backdrop-filter: blur(12px);
+  z-index: 20;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(224, 122, 95, 0.4);
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+}
+
+.brand h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.brand span {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  display: block;
+  margin-top: -2px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-pill {
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-pill.accent {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.btn-pill.warn {
+  background: rgba(245, 158, 11, 0.16);
+  color: #fde68a;
+  border-color: rgba(245, 158, 11, 0.45);
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.card-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.badge.live {
+  background: rgba(52, 211, 153, 0.16);
+  color: var(--success);
+}
+
+.wave-hero {
+  background: linear-gradient(145deg, #2a1b2e 0%, #161018 100%);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 20px 16px;
+  margin-bottom: 16px;
+}
+
+.wave-grid {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.cycle-ring {
+  width: 112px;
+  height: 112px;
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.cycle-ring svg {
+  transform: rotate(-90deg);
+  width: 112px;
+  height: 112px;
+}
+
+.cycle-ring-center {
+  position: absolute;
+  text-align: center;
+}
+
+.cycle-day-num {
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.cycle-day-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.phase-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+.phase-desc {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.prediction-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pred-pill {
+  font-size: 0.74rem;
+  background: rgba(250, 245, 247, 0.06);
+  border: 1px solid rgba(250, 245, 247, 0.1);
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: var(--text);
+}
+
+.libido-scale {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+
+.libido-btn {
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 4px;
+  color: var(--text);
+  cursor: pointer;
+  text-align: center;
+}
+
+.libido-btn .lvl {
+  font-size: 1.15rem;
+  font-weight: 800;
+  display: block;
+  pointer-events: none;
+}
+
+.libido-btn .lbl {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 2px;
+  pointer-events: none;
+}
+
+.libido-btn.selected {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.libido-btn.selected .lbl {
+  color: var(--text);
+}
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.chip {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.chip.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.chip.menstrual.active {
+  background: rgba(225, 29, 72, 0.22);
+  border-color: var(--menstrual);
+  color: #ffe4e6;
+}
+
+.field-group {
+  margin-bottom: 14px;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+select, input[type="text"], input[type="url"], input[type="password"], input[type="date"], input[type="number"], textarea {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.btn-primary {
+  width: 100%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+  padding: 13px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.climate-banner {
+  background: linear-gradient(135deg, rgba(224, 122, 95, 0.22), rgba(192, 132, 252, 0.14));
+  border: 1px solid rgba(224, 122, 95, 0.42);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.signal-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.signal-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  padding: 12px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.signal-btn small {
+  display: block;
+  font-size: 0.73rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 2px;
+  pointer-events: none;
+}
+
+.signal-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(250, 245, 247, 0.08);
+  font-size: 0.84rem;
+}
+
+.toggle-row:last-child {
+  border-bottom: none;
+}
+
+.plan-item {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+}
+
+.pair-code-box {
+  background: var(--bg);
+  border: 1px dashed rgba(224, 122, 95, 0.55);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.84rem;
+  color: var(--accent);
+  word-break: break-all;
+  margin: 8px 0;
+}
+
+.forecast-strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.forecast-cell {
+  border-radius: 9px;
+  padding: 6px 2px;
+  text-align: center;
+  font-size: 0.7rem;
+  background: var(--bg-elevated);
+  border: 1px solid transparent;
+}
+
+.cal-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  text-align: center;
+}
+
+.cal-weekday {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding-bottom: 6px;
+}
+
+.cal-day {
+  aspect-ratio: 1;
+  border-radius: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 2px 4px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  position: relative;
+  background: rgba(250, 245, 247, 0.03);
+  border: 1.5px solid transparent;
+  overflow: hidden;
+}
+
+.cal-day.empty {
+  background: transparent;
+  cursor: default;
+}
+
+.cal-day-num {
+  line-height: 1;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.cal-day.phase-menstrual {
+  background: rgba(225, 29, 72, 0.3);
+  color: #ffe4e6;
+  border-color: rgba(225, 29, 72, 0.65);
+}
+
+.cal-day.phase-menstrual-pred {
+  background: rgba(225, 29, 72, 0.14);
+  color: #fecdd3;
+  border: 1.5px dashed rgba(225, 29, 72, 0.65);
+}
+
+.cal-day.phase-follicular {
+  background: rgba(244, 162, 97, 0.1);
+  color: var(--text);
+}
+
+.cal-day.phase-ovulatory {
+  background: rgba(224, 122, 95, 0.24);
+  color: #ffe4dc;
+  border-color: rgba(224, 122, 95, 0.45);
+}
+
+.cal-day.phase-ovulation-peak {
+  background: rgba(224, 122, 95, 0.38);
+  color: #ffffff;
+  border: 1.5px solid var(--ovulatory);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+.cal-day.phase-luteal {
+  background: rgba(192, 132, 252, 0.12);
+  color: #f3e8ff;
+}
+
+.cal-day.today {
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+  font-weight: 800;
+}
+
+.cal-day.selected {
+  transform: scale(1.04);
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 2px rgba(250, 245, 247, 0.35);
+  z-index: 2;
+}
+
+.cal-phase-bar {
+  width: 72%;
+  height: 3px;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.cal-dots {
+  display: flex;
+  gap: 2px;
+  height: 4px;
+  align-items: center;
+  pointer-events: none;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px 10px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(250, 245, 247, 0.08);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.chart-box {
+  width: 100%;
+  overflow-x: auto;
+  padding-top: 6px;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(22, 16, 24, 0.95);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 4px calc(8px + var(--safe-bottom));
+  z-index: 30;
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 10px;
+}
+
+.nav-item svg, .nav-item span {
+  pointer-events: none;
+}
+
+.nav-item.active {
+  color: var(--accent);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 100;
+  display: none;
+  pointer-events: none;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.overlay.active {
+  display: flex;
+  pointer-events: auto;
+}
+
+.pin-dots {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin: 24px 0;
+}
+
+.pin-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: transparent;
+}
+
+.pin-dot.filled {
+  background: var(--accent);
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.key-btn {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 16px;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.toast {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  font-size: 0.84rem;
+  padding: 10px 18px;
+  border-radius: 999px;
+  z-index: 200;
+  transition: transform 0.25s ease;
+  pointer-events: none;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+#runtime-error-box {
+  display: none;
+  background: rgba(225, 29, 72, 0.14);
+  border: 1px solid rgba(225, 29, 72, 0.5);
+  color: #ffe4e6;
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 14px;
+  font-size: 0.8rem;
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #161018 !important;
+    padding: 0 !important;
+  }
+  header, .bottom-nav, .no-print, #runtime-error-box {
+    display: none !important;
+  }
+  .view {
+    display: none !important;
+  }
+  #view-insights {
+    display: block !important;
+  }
+  .card {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #161018 !important;
+    break-inside: avoid;
+  }
+  .print-only-header {
+    display: block !important;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #161018;
+    padding-bottom: 8px;
+  }
+}
+
+.print-only-header {
+  display: none;
+}
