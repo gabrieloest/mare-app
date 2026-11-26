@@ -1,22 +1,40 @@
 # 🌊 Maré
 
-**Maré** é um aplicativo focado em privacidade (*privacy-first*) para monitoramento do ciclo menstrual, libido e saúde íntima. Assim como as marés, nosso corpo e desejo passam por fluxos naturais — o objetivo do app é ajudar pessoas que menstruam a entenderem seus próprios padrões hormonais, físicos e emocionais.
+**Maré** é um aplicativo web *mobile-first* e *privacy-first* (PWA) para monitoramento do ciclo menstrual, libido e bem-estar íntimo. Assim como as marés, nosso corpo e desejo passam por fluxos naturais — o objetivo do app é ajudar pessoas que menstruam a entenderem seus próprios padrões hormonais, físicos e emocionais com total autonomia.
+
+🌐 **Acesse o app:** [https://gabrieloest.github.io/mare-app/](https://gabrieloest.github.io/mare-app/)  
+📦 **Repositório:** [https://github.com/gabrieloest/mare-app](https://github.com/gabrieloest/mare-app)
+
+---
 
 ## ✨ Principais Funcionalidades
 
-* **Calendário e Previsão de Ciclo:** Registro de menstruação, fluxo e cálculo adaptativo das fases (Menstrual, Folicular, Ovulatória e Lútea).
-* **Diário de Libido e Saúde Sexual:** Check-in rápido de desejo sexual, satisfação, lubrificação, desconfortos e fatores externos (sono, estresse, medicações).
-* **Correlações e Insights:** Visualização clara de como as fases do ciclo e o estilo de vida influenciam o humor e a libido ao longo do tempo.
-* **Arquitetura Privacy-First:** Armazenamento local prioritário no dispositivo, bloqueio por biometria e zero compartilhamento ou venda de dados íntimos.
+- **Rastreamento de Ciclo e Previsões Inteligentes:** Calendário interativo para registro de menstruação, intensidade do fluxo, escapes (*spotting*) e cálculo adaptativo das fases (Menstrual, Folicular, Ovulatória e Lútea), janela fértil e próxima previsão.
+- **Diário de Libido e Saúde Sexual:** Check-in diário rápido (em menos de 15 segundos) na escala de 1 a 5, com marcadores para atividade sexual (com ou sem proteção), masturbação, satisfação, lubrificação, desconforto e fatores externos (sono, estresse, álcool, medicações e exercício).
+- **Sintomas, Humor e Contraceptivos:** Tags para sintomas físicos e emocionais, além de módulo contraceptivo (pílula, DIU hormonal ou de cobre, anel, adesivo, implante) com lembretes e adaptação da leitura hormonal (como diferenciar sangramento de privação e supressão ovulatória).
+- **Insights, Correlações e Relatório em PDF:** Gráfico nativo cruzando fases do ciclo e libido, leituras educativas contextualizadas e exportação limpa via impressão/PDF para consultas ginecológicas ou terapêuticas.
+- **Privacidade, Segurança e Modo Discreto:** Armazenamento 100% local via `localStorage` (sem criação de conta), bloqueio por PIN de 4 dígitos, modo discreto na interface e backup portátil criptografado ponta a ponta com **AES-GCM**.
+- **UX Inclusiva e Onboarding por Objetivo:** Linguagem neutra e inclusiva, com modos selecionáveis (*Conhecer meu corpo*, *Acompanhar libido/bem-estar*, *Evitar gravidez* ou *Tentar engravidar*).
+
+---
 
 ## 🛡️ Privacidade e Segurança
 
-Dados sobre saúde menstrual e sexual são extremamente sensíveis. O **Maré** foi projetado para funcionar offline por padrão, mantendo o controle total das informações nas mãos de quem usa.
+Dados sobre saúde menstrual, fertilidade e vida sexual são altamente sensíveis. A **Maré** foi projetada para rodar sem dependências de backend proprietário:
 
-## 🚀 Como rodar o projeto localmente
+- **Dados apenas no dispositivo:** Os registros ficam salvos no `localStorage` do navegador, sem envio automático para servidores externos.
+- **Zero rastreamento comercial:** Não há venda, compartilhamento ou monetização de dados íntimos com terceiros.
+- **Backup sob seu controle:** Caso deseje migrar de aparelho ou guardar uma cópia de segurança, você pode exportar e restaurar um arquivo `.mare` criptografado localmente com senha (`PBKDF2` + `AES-GCM`).
 
-*(Adicione aqui as instruções da sua stack, ex: `npm install` e `npx expo start`)*
+---
 
-## 📄 Licença
+## 🚀 Como rodar o projeto localmente e publicar
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+A aplicação é composta por arquivos estáticos na raiz do repositório (`index.html`, `manifest.json` e `sw.js`), sem necessidade de `npm install` ou etapa de build.
+
+### Rodar localmente
+
+1. Clone o repositório:
+   ```bash
+   git clone [https://github.com/gabrieloest/mare-app.git](https://github.com/gabrieloest/mare-app.git)
+   cd mare-app
