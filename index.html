@@ -448,6 +448,7 @@
       font-size: 0.82rem;
     }
 
+    /* CALENDÁRIO & LAYOUT DAS FASES */
     .cal-nav {
       display: flex;
       justify-content: space-between;
@@ -458,7 +459,7 @@
     .cal-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
+      gap: 5px;
       text-align: center;
     }
 
@@ -471,16 +472,18 @@
 
     .cal-day {
       aspect-ratio: 1;
-      border-radius: 10px;
+      border-radius: 11px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
+      padding: 5px 2px 4px;
       font-size: 0.82rem;
       cursor: pointer;
       position: relative;
       background: rgba(250, 245, 247, 0.03);
-      border: 1px solid transparent;
+      border: 1.5px solid transparent;
+      overflow: hidden;
     }
 
     .cal-day.empty {
@@ -488,36 +491,73 @@
       cursor: default;
     }
 
+    .cal-day-num {
+      line-height: 1;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    /* Fases fisiológicas no calendário */
+    .cal-day.phase-menstrual {
+      background: rgba(225, 29, 72, 0.3);
+      color: #ffe4e6;
+      border-color: rgba(225, 29, 72, 0.65);
+    }
+
+    .cal-day.phase-menstrual-pred {
+      background: rgba(225, 29, 72, 0.14);
+      color: #fecdd3;
+      border: 1.5px dashed rgba(225, 29, 72, 0.65);
+    }
+
+    .cal-day.phase-follicular {
+      background: rgba(244, 162, 97, 0.1);
+      color: var(--text);
+    }
+
+    .cal-day.phase-ovulatory {
+      background: rgba(224, 122, 95, 0.24);
+      color: #ffe4dc;
+      border-color: rgba(224, 122, 95, 0.45);
+    }
+
+    .cal-day.phase-ovulation-peak {
+      background: rgba(224, 122, 95, 0.38);
+      color: #ffffff;
+      border: 1.5px solid var(--ovulatory);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+    }
+
+    .cal-day.phase-luteal {
+      background: rgba(192, 132, 252, 0.12);
+      color: #f3e8ff;
+    }
+
     .cal-day.today {
-      border-color: var(--accent);
+      outline: 2px solid var(--text);
+      outline-offset: -2px;
       font-weight: 800;
     }
 
     .cal-day.selected {
-      background: var(--bg-elevated);
-      border-color: var(--text);
+      transform: scale(1.04);
+      border-color: #ffffff !important;
+      box-shadow: 0 0 0 2px rgba(250, 245, 247, 0.35);
+      z-index: 2;
     }
 
-    .cal-day.period {
-      background: rgba(225, 29, 72, 0.28);
-      color: #ffe4e6;
-      border-color: rgba(225, 29, 72, 0.55);
-    }
-
-    .cal-day.predicted-period {
-      border: 1px dashed var(--menstrual);
-    }
-
-    .cal-day.fertile {
-      background: rgba(224, 122, 95, 0.18);
-      color: #ffd6cc;
+    .cal-phase-bar {
+      width: 72%;
+      height: 3px;
+      border-radius: 999px;
+      pointer-events: none;
     }
 
     .cal-dots {
       display: flex;
       gap: 2px;
-      margin-top: 2px;
       height: 4px;
+      align-items: center;
       pointer-events: none;
     }
 
@@ -528,18 +568,28 @@
     }
 
     .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 12px;
-      font-size: 0.74rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px 10px;
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(250, 245, 247, 0.08);
+      font-size: 0.72rem;
       color: var(--text-muted);
     }
 
     .legend span {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
+    }
+
+    .swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      display: inline-block;
+      flex-shrink: 0;
     }
 
     .chart-box {
@@ -753,6 +803,11 @@
       <div class="field-group">
         <label class="field-label">Duração média do ciclo (dias)</label>
         <input type="number" id="ob-cycle-len" value="28" min="18" max="60" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Duração média da menstruação (dias)</label>
+        <input type="number" id="ob-period-len" value="5" min="2" max="10" />
       </div>
 
       <div class="field-group">
@@ -1044,9 +1099,12 @@
         <div class="cal-grid" id="cal-days"></div>
 
         <div class="legend">
-          <span><i class="dot" style="background:var(--menstrual)"></i> Menstruação</span>
-          <span><i class="dot" style="background:var(--accent)"></i> Janela Fértil</span>
-          <span><i class="dot" style="background:var(--follicular)"></i> Registro de Libido</span>
+          <span><i class="swatch" style="background:rgba(225,29,72,0.55); border:1px solid var(--menstrual);"></i> Menstruação (real)</span>
+          <span><i class="swatch" style="background:rgba(225,29,72,0.16); border:1px dashed var(--menstrual);"></i> Menstruação (prevista)</span>
+          <span><i class="swatch" style="background:var(--follicular);"></i> Fase Folicular</span>
+          <span><i class="swatch" style="background:rgba(224,122,95,0.45); border:1px solid var(--ovulatory);"></i> Janela Fértil / Ovulação</span>
+          <span><i class="swatch" style="background:var(--luteal);"></i> Fase Lútea</span>
+          <span><i class="dot" style="background:#f4a261;"></i> Libido registrada</span>
         </div>
       </div>
 
@@ -1055,9 +1113,9 @@
           <span class="card-title" id="selected-day-heading">Selecione um dia no calendário</span>
           <button type="button" class="btn-pill accent" data-action="edit-selected-day">Editar dia</button>
         </div>
-        <p id="selected-day-summary" style="font-size:0.84rem; color:var(--text-muted);">
+        <div id="selected-day-summary" style="font-size:0.84rem; color:var(--text-muted); line-height:1.6;">
           Toque em qualquer data acima para visualizar ou registrar fluxo, sintomas e desejo sexual.
-        </p>
+        </div>
       </div>
     </section>
 
@@ -1124,6 +1182,16 @@
             <option value="patch">Adesivo transdérmico</option>
             <option value="implant">Implante subdérmico</option>
           </select>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;" class="field-group">
+          <div>
+            <label class="field-label">Ciclo padrão (dias)</label>
+            <input type="number" id="set-cycle-len" data-sync-settings="true" min="18" max="60" value="28" />
+          </div>
+          <div>
+            <label class="field-label">Menstruação padrão (dias)</label>
+            <input type="number" id="set-period-len" data-sync-settings="true" min="2" max="10" value="5" />
+          </div>
         </div>
         <div class="field-group">
           <label class="field-label">Lembrete diário de contraceptivo / check-in</label>
@@ -1314,19 +1382,34 @@
       setTimeout(() => el.classList.remove('show'), 2200);
     }
 
-    function getCycleAnalysis(targetDateStr = toISODate(new Date())) {
-      const targetDate = parseISODate(targetDateStr);
+    /* =========================================================================
+       MOTOR FISIOLÓGICO DO CICLO (ACOG / FIGO) + PROJEÇÃO MULTICICLOS
+       - Fase Lútea fisiológica: ~14 dias antes da próxima menstruação
+       - Ovulação estimada: avgCycle - 14 (Dia 14 em um ciclo de 28 dias)
+       - Janela Fértil (sobrevida espermática de 5d + óvulo 24h): Ovulação - 5 até Ovulação
+       - Fase Menstrual: duração real registrada ou média dos sangramentos (padrão 5d)
+       - Fase Folicular: término da menstruação até início da janela fértil
+       ========================================================================= */
+    function getCycleMetrics() {
       const flowDates = Object.keys(state.entries || {})
         .filter(d => state.entries[d] && ['light', 'medium', 'heavy'].includes(state.entries[d].flow))
         .sort();
 
-      const periodStarts = [];
+      const cycles = [];
+      let currentBlock = [];
       for (let i = 0; i < flowDates.length; i++) {
         if (i === 0 || diffDays(parseISODate(flowDates[i - 1]), parseISODate(flowDates[i])) > 2) {
-          periodStarts.push(flowDates[i]);
+          if (currentBlock.length) cycles.push(currentBlock);
+          currentBlock = [flowDates[i]];
+        } else {
+          currentBlock.push(flowDates[i]);
         }
       }
+      if (currentBlock.length) cycles.push(currentBlock);
 
+      const periodStarts = cycles.map(b => b[0]);
+
+      // Média aparada da duração dos ciclos registrados
       let avgCycle = Number(state.settings.defaultCycleLength) || 28;
       if (periodStarts.length >= 2) {
         const lengths = [];
@@ -1335,67 +1418,148 @@
           if (len >= 18 && len <= 60) lengths.push(len);
         }
         if (lengths.length > 0) {
-          const recent = lengths.slice(-3);
+          const recent = lengths.slice(-4);
           avgCycle = Math.round(recent.reduce((a, b) => a + b, 0) / recent.length);
         }
       }
 
-      const lastStartStr = periodStarts.filter(d => d <= targetDateStr).pop() || periodStarts[0] || targetDateStr;
-      const lastStart = parseISODate(lastStartStr);
-      const cycleDay = Math.max(1, diffDays(lastStart, targetDate) + 1);
+      // Média da duração do sangramento menstrual
+      let avgPeriodLen = Number(state.settings.defaultPeriodLength) || 5;
+      if (cycles.length > 0) {
+        const periodLengths = cycles
+          .map(b => diffDays(parseISODate(b[0]), parseISODate(b[b.length - 1])) + 1)
+          .filter(l => l >= 2 && l <= 10);
+        if (periodLengths.length > 0) {
+          const recentP = periodLengths.slice(-3);
+          avgPeriodLen = Math.round(recentP.reduce((a, b) => a + b, 0) / recentP.length);
+        }
+      }
+
+      return { periodStarts, avgCycle, avgPeriodLen };
+    }
+
+    function getCycleAnalysis(targetDateStr = toISODate(new Date()), cachedMetrics = null) {
+      const targetDate = parseISODate(targetDateStr);
+      const { periodStarts, avgCycle, avgPeriodLen } = cachedMetrics || getCycleMetrics();
       const isHormonalSuppressed = ['pill', 'ring', 'patch', 'implant', 'hormonal_iud'].includes(state.settings.contraceptive);
-      const ovulationDay = Math.max(8, avgCycle - 14);
-      const fertileStart = Math.max(6, ovulationDay - 4);
-      const fertileEnd = ovulationDay + 1;
+
+      // Encontra o início de ciclo real anterior ou igual à data alvo
+      const pastOrCurrentStarts = periodStarts.filter(d => d <= targetDateStr);
+      const anchorStr = pastOrCurrentStarts.length > 0
+        ? pastOrCurrentStarts[pastOrCurrentStarts.length - 1]
+        : (periodStarts[0] || targetDateStr);
+      const anchorDate = parseISODate(anchorStr);
+      const totalDaysFromAnchor = diffDays(anchorDate, targetDate);
+
+      // Projeta ciclos futuros (ou passados antes do 1º registro) em blocos de avgCycle
+      let cycleOffsetIndex = 0;
+      let cycleStartDate = anchorDate;
+      let cycleDay = 1;
+
+      if (totalDaysFromAnchor >= 0) {
+        cycleOffsetIndex = Math.floor(totalDaysFromAnchor / avgCycle);
+        cycleStartDate = addDays(anchorDate, cycleOffsetIndex * avgCycle);
+        cycleDay = (totalDaysFromAnchor % avgCycle) + 1;
+      } else {
+        cycleOffsetIndex = Math.floor(totalDaysFromAnchor / avgCycle);
+        cycleStartDate = addDays(anchorDate, cycleOffsetIndex * avgCycle);
+        cycleDay = diffDays(cycleStartDate, targetDate) + 1;
+      }
+
+      const isPredictedCycle = cycleOffsetIndex !== 0 || pastOrCurrentStarts.length === 0;
+      const entry = state.entries[targetDateStr];
+      const hasLoggedPeriod = !!(entry && ['light', 'medium', 'heavy'].includes(entry.flow));
+      const hasLoggedSpotting = !!(entry && entry.flow === 'spotting');
+
+      // Marcos fisiológicos do ciclo corrente/projetado
+      const lutealLength = 14;
+      const ovulationDay = Math.max(avgPeriodLen + 2, avgCycle - lutealLength);
+      const fertileStartDay = Math.max(avgPeriodLen + 1, ovulationDay - 5);
+      const fertileEndDay = ovulationDay;
 
       let phaseKey = 'follicular';
       let phaseName = 'Fase Folicular';
       let phaseColor = '#f4a261';
-      let phaseDesc = 'Estrogênio em elevação gradual; tendência de melhora na disposição e clareza mental.';
+      let phaseDesc = 'Estrogênio em elevação gradual; tendência de melhora na disposição, lubrificação e clareza mental.';
+      let isOvulationDay = false;
 
       if (isHormonalSuppressed) {
-        if (cycleDay <= 5) {
+        if (hasLoggedPeriod || (!isPredictedCycle && cycleDay <= avgPeriodLen) || (isPredictedCycle && cycleDay <= avgPeriodLen)) {
           phaseKey = 'menstrual';
           phaseName = 'Pausa / Sangramento de Privação';
           phaseColor = '#e11d48';
           phaseDesc = 'Sangramento causado pela queda dos hormônios sintéticos do método contraceptivo.';
         } else {
+          phaseKey = 'follicular';
           phaseName = 'Fase Estável (Método Hormonal)';
+          phaseColor = '#f4a261';
           phaseDesc = 'Hormônios sintéticos mantêm níveis constantes e suprimem o pico ovulatório natural.';
         }
-      } else if (cycleDay <= 5) {
+      } else if (hasLoggedPeriod || (!isPredictedCycle && cycleDay <= avgPeriodLen) || (isPredictedCycle && cycleDay <= avgPeriodLen)) {
         phaseKey = 'menstrual';
-        phaseName = 'Fase Menstrual';
+        phaseName = isPredictedCycle && !hasLoggedPeriod ? 'Menstruação Prevista' : 'Fase Menstrual';
         phaseColor = '#e11d48';
-        phaseDesc = 'Queda de estrogênio e progesterona. Período natural de recolhimento e menor energia física.';
-      } else if (cycleDay < fertileStart) {
+        phaseDesc = 'Descamação endometrial pela queda de progesterona e estrogênio. Período natural de menor energia física.';
+      } else if (cycleDay < fertileStartDay) {
+        phaseKey = 'follicular';
         phaseName = 'Fase Folicular';
-        phaseDesc = 'Estrogênio em ascensão. Costuma favorecer o humor, lubrificação e retomada gradual do desejo.';
-      } else if (cycleDay <= fertileEnd) {
+        phaseColor = '#f4a261';
+        phaseDesc = 'Maturação folicular e estrogênio em ascensão. Favorece disposição, humor estável e retomada do desejo.';
+      } else if (cycleDay <= fertileEndDay) {
         phaseKey = 'ovulatory';
-        phaseName = 'Fase Ovulatória / Janela Fértil';
+        isOvulationDay = (cycleDay === ovulationDay);
+        phaseName = isOvulationDay ? 'Dia Estimado da Ovulação' : 'Janela Fértil (Fase Ovulatória)';
         phaseColor = '#e07a5f';
-        phaseDesc = 'Pico de estrogênio e testosterona. Frequentemente associada ao ápice da libido e energia.';
+        phaseDesc = isOvulationDay
+          ? 'Pico de LH e estrogênio com liberação do óvulo. Ápice fisiológico de fertilidade e libido.'
+          : 'Alta probabilidade fértil (sobrevida espermática de até 5 dias + pico estrogênico).';
       } else {
         phaseKey = 'luteal';
         phaseName = 'Fase Lútea';
         phaseColor = '#c084fc';
-        phaseDesc = 'Predomínio de progesterona. Pode haver oscilação de humor, sensibilidade física e variação no desejo.';
+        phaseDesc = 'Predomínio de progesterona (~14 dias até o próximo ciclo). Pode trazer introspecção ou sensibilidade pré-menstrual.';
       }
 
-      const nextPeriodDate = addDays(lastStart, avgCycle);
+      const nextPeriodDate = addDays(cycleStartDate, avgCycle);
+      const fertileStartStr = toISODate(addDays(cycleStartDate, fertileStartDay - 1));
+      const fertileEndStr = toISODate(addDays(cycleStartDate, fertileEndDay - 1));
+      const ovulationStr = toISODate(addDays(cycleStartDate, ovulationDay - 1));
+
+      // Próxima transição de fase a partir do dia alvo
+      let nextPhaseLabel = '';
+      if (!isHormonalSuppressed) {
+        if (cycleDay <= avgPeriodLen) {
+          nextPhaseLabel = `Fase Folicular em ${avgPeriodLen - cycleDay + 1}d`;
+        } else if (cycleDay < fertileStartDay) {
+          nextPhaseLabel = `Janela Fértil em ${fertileStartDay - cycleDay}d`;
+        } else if (cycleDay <= fertileEndDay) {
+          nextPhaseLabel = `Fase Lútea em ${fertileEndDay - cycleDay + 1}d`;
+        } else {
+          nextPhaseLabel = `Próx. Menstruação em ${Math.max(1, avgCycle - cycleDay + 1)}d`;
+        }
+      } else {
+        nextPhaseLabel = `Próx. ciclo em ${Math.max(1, avgCycle - cycleDay + 1)}d`;
+      }
+
       return {
         cycleDay,
         avgCycle,
+        avgPeriodLen,
         phaseKey,
         phaseName,
         phaseColor,
         phaseDesc,
         isHormonalSuppressed,
+        isPredictedCycle,
+        hasLoggedPeriod,
+        hasLoggedSpotting,
+        isOvulationDay,
         nextPeriodStr: toISODate(nextPeriodDate),
         daysUntilNextPeriod: diffDays(targetDate, nextPeriodDate),
-        fertileStartStr: toISODate(addDays(lastStart, fertileStart - 1)),
-        fertileEndStr: toISODate(addDays(lastStart, fertileEnd - 1)),
+        fertileStartStr,
+        fertileEndStr,
+        ovulationStr,
+        nextPhaseLabel,
         periodStarts
       };
     }
@@ -1425,15 +1589,11 @@
         ? 'Acompanhamento diário de bem-estar e equilíbrio.'
         : analysis.phaseDesc;
 
-      const nextLabel = analysis.daysUntilNextPeriod >= 0
-        ? `Próx. ciclo em ${analysis.daysUntilNextPeriod}d`
-        : `Ciclo ${Math.abs(analysis.daysUntilNextPeriod)}d além da média`;
-
       const fertilePill = !analysis.isHormonalSuppressed
         ? `<span class="pred-pill">Janela fértil: ${parseISODate(analysis.fertileStartStr).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} – ${parseISODate(analysis.fertileEndStr).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</span>`
         : `<span class="pred-pill">Ovulação suprimida pelo método</span>`;
 
-      document.getElementById('hero-predictions').innerHTML = `<span class="pred-pill">${nextLabel}</span>${fertilePill}`;
+      document.getElementById('hero-predictions').innerHTML = `<span class="pred-pill">${analysis.nextPhaseLabel}</span>${fertilePill}`;
 
       const contraBanner = document.getElementById('contraceptive-banner');
       if (state.settings.contraceptive !== 'none' || state.settings.reminder) {
@@ -1592,7 +1752,7 @@
       const firstDayWeekday = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       const todayStr = toISODate(new Date());
-      const analysis = getCycleAnalysis(todayStr);
+      const metrics = getCycleMetrics();
 
       const container = document.getElementById('cal-days');
       container.innerHTML = '';
@@ -1608,6 +1768,7 @@
         const entry = state.entries[dateStr];
         const entryTags = entry && Array.isArray(entry.tags) ? entry.tags : [];
         const hasPlan = state.duo.plans.some(p => p.date === dateStr);
+        const dayAnalysis = getCycleAnalysis(dateStr, metrics);
 
         const cell = document.createElement('div');
         cell.className = 'cal-day';
@@ -1615,20 +1776,29 @@
         if (dateStr === todayStr) cell.classList.add('today');
         if (dateStr === selectedCalDate) cell.classList.add('selected');
 
-        if (entry && ['light', 'medium', 'heavy', 'spotting'].includes(entry.flow)) {
-          cell.classList.add('period');
-        } else if (dateStr >= analysis.nextPeriodStr && dateStr <= toISODate(addDays(parseISODate(analysis.nextPeriodStr), 4))) {
-          cell.classList.add('predicted-period');
-        } else if (!analysis.isHormonalSuppressed && dateStr >= analysis.fertileStartStr && dateStr <= analysis.fertileEndStr) {
-          cell.classList.add('fertile');
+        // Aplica estilo visual coerente com a fase fisiológica de cada dia do mês
+        if (dayAnalysis.hasLoggedPeriod || dayAnalysis.hasLoggedSpotting) {
+          cell.classList.add('phase-menstrual');
+        } else if (dayAnalysis.phaseKey === 'menstrual') {
+          cell.classList.add('phase-menstrual-pred');
+        } else if (dayAnalysis.phaseKey === 'ovulatory') {
+          cell.classList.add(dayAnalysis.isOvulationDay ? 'phase-ovulation-peak' : 'phase-ovulatory');
+        } else if (dayAnalysis.phaseKey === 'luteal') {
+          cell.classList.add('phase-luteal');
+        } else {
+          cell.classList.add('phase-follicular');
         }
 
         const dotsHtml = [];
-        if (entry?.libido > 0) dotsHtml.push(`<i class="dot" style="background:#f4a261"></i>`);
-        if (entryTags.length > 0) dotsHtml.push(`<i class="dot" style="background:#c084fc"></i>`);
-        if (hasPlan) dotsHtml.push(`<i class="dot" style="background:#f59e0b"></i>`);
+        if (entry?.libido > 0) dotsHtml.push(`<i class="dot" style="background:#f4a261" title="Libido"></i>`);
+        if (entryTags.length > 0) dotsHtml.push(`<i class="dot" style="background:#faf5f7" title="Sintomas/Tags"></i>`);
+        if (hasPlan) dotsHtml.push(`<i class="dot" style="background:#f59e0b" title="Plano Duo"></i>`);
 
-        cell.innerHTML = `<span>${d}</span><div class="cal-dots">${dotsHtml.join('')}</div>`;
+        cell.innerHTML = `
+          <span class="cal-day-num">${d}</span>
+          <div class="cal-dots">${dotsHtml.join('')}</div>
+          <span class="cal-phase-bar" style="background:${dayAnalysis.phaseColor};"></span>
+        `;
         container.appendChild(cell);
       }
 
@@ -1644,17 +1814,26 @@
       const dayPlans = state.duo.plans.filter(p => p.date === dateStr).map(p => p.title);
       const planLine = dayPlans.length ? `<br>Plano do casal: <strong>${dayPlans.join(', ')}</strong>` : '';
 
+      const statusTag = dayAnalysis.hasLoggedPeriod
+        ? 'Registro confirmado'
+        : (dayAnalysis.isPredictedCycle ? 'Projeção fisiológica' : 'Ciclo atual');
+
+      const phaseBadgeHtml = `<span style="display:inline-block; padding:2px 8px; border-radius:999px; font-size:0.75rem; font-weight:700; background:${dayAnalysis.phaseColor}29; color:${dayAnalysis.phaseColor};">${dayAnalysis.phaseName}</span>`;
+
       if (!entry) {
         document.getElementById('selected-day-summary').innerHTML =
-          `Fase estimada: <strong>${dayAnalysis.phaseName}</strong> (Dia ${dayAnalysis.cycleDay} do ciclo).<br>Nenhum registro salvo nesta data.${planLine}`;
+          `${phaseBadgeHtml} <span style="font-size:0.75rem;">(${statusTag} • Dia ${dayAnalysis.cycleDay} de ~${dayAnalysis.avgCycle})</span><br>
+           <span style="display:block; margin-top:4px;">${dayAnalysis.phaseDesc}</span>
+           <span style="display:block; margin-top:4px; color:var(--text);">Próxima transição: <strong>${dayAnalysis.nextPhaseLabel}</strong></span>${planLine}`;
         return;
       }
 
       const entryTags = Array.isArray(entry.tags) ? entry.tags : [];
       const flowLabels = { none: 'Sem fluxo', spotting: 'Escape', light: 'Leve', medium: 'Moderado', heavy: 'Intenso' };
       document.getElementById('selected-day-summary').innerHTML =
-        `Fase: <strong>${dayAnalysis.phaseName}</strong> • Fluxo: <strong>${flowLabels[entry.flow] || 'Sem fluxo'}</strong><br>
-         Libido: <strong>${entry.libido ? `${entry.libido}/5` : 'Não informado'}</strong> • ${entryTags.length ? `${entryTags.length} marcador(es)` : 'Sem sintomas adicionais'}${planLine}`;
+        `${phaseBadgeHtml} <span style="font-size:0.75rem;">(Dia ${dayAnalysis.cycleDay} do ciclo)</span><br>
+         Fluxo: <strong>${flowLabels[entry.flow] || 'Sem fluxo'}</strong> • Libido: <strong>${entry.libido ? `${entry.libido}/5` : 'Não informado'}</strong><br>
+         ${entryTags.length ? `${entryTags.length} marcador(es) registrado(s)` : 'Sem sintomas adicionais'} • ${dayAnalysis.nextPhaseLabel}${planLine}`;
     }
 
     function renderInsightsView() {
@@ -1678,7 +1857,7 @@
           const entry = state.entries[d] || {};
           const analysis = getCycleAnalysis(d);
           const x = sortedDates.length === 1 ? width / 2 : padLeft + i * stepX;
-          bars += `<rect x="${x - 10}" y="12" width="20" height="${plotH}" rx="4" fill="${analysis.phaseColor}" opacity="0.2" />`;
+          bars += `<rect x="${x - 10}" y="12" width="20" height="${plotH}" rx="4" fill="${analysis.phaseColor}" opacity="0.22" />`;
           if (entry.libido > 0) {
             const y = 12 + plotH - ((entry.libido - 1) / 4) * (plotH - 12);
             points.push({ x, y });
@@ -1712,7 +1891,7 @@
       if (['pill', 'ring', 'patch', 'implant', 'hormonal_iud'].includes(state.settings.contraceptive)) {
         cards.push(`<p>• <strong>Influência Contraceptiva:</strong> Métodos hormonais reduzem a flutuação natural de estrogênio e testosterona livre, o que pode estabilizar o humor e modular os picos de desejo.</p>`);
       } else {
-        cards.push(`<p>• <strong>Ondas Hormonais Naturais:</strong> O pico de estrogênio próximo à ovulação costuma favorecer lubrificação e desejo, enquanto a fase lútea tende a trazer maior introspecção.</p>`);
+        cards.push(`<p>• <strong>Ondas Hormonais Naturais:</strong> A fase lútea dura em média ~14 dias antes da menstruação; o pico de estrogênio próximo à ovulação favorece lubrificação e desejo.</p>`);
       }
       if (stressLowLibido > 0) {
         cards.push(`<p>• <strong>Padrão Detectado (Estresse × Desejo):</strong> Em ${stressLowLibido} registro(s) com libido baixa, você também marcou <em>estresse alto</em>.</p>`);
@@ -1727,18 +1906,20 @@
         <div style="background:var(--bg-elevated); padding:12px; border-radius:12px;"><div style="font-size:0.74rem; color:var(--text-muted);">Ciclo Médio</div><div style="font-size:1.25rem; font-weight:800;">${analysis.avgCycle} dias</div></div>
         <div style="background:var(--bg-elevated); padding:12px; border-radius:12px;"><div style="font-size:0.74rem; color:var(--text-muted);">Libido Média</div><div style="font-size:1.25rem; font-weight:800;">${avgLibido} / 5</div></div>
         <div style="background:var(--bg-elevated); padding:12px; border-radius:12px;"><div style="font-size:0.74rem; color:var(--text-muted);">Dias Registrados</div><div style="font-size:1.25rem; font-weight:800;">${allEntries.length}</div></div>
-        <div style="background:var(--bg-elevated); padding:12px; border-radius:12px;"><div style="font-size:0.74rem; color:var(--text-muted);">Ciclos Mapeados</div><div style="font-size:1.25rem; font-weight:800;">${analysis.periodStarts.length}</div></div>
+        <div style="background:var(--bg-elevated); padding:12px; border-radius:12px;"><div style="font-size:0.74rem; color:var(--text-muted);">Menstruação Média</div><div style="font-size:1.25rem; font-weight:800;">${analysis.avgPeriodLen} dias</div></div>
       `;
     }
 
     function renderSettingsView() {
       document.getElementById('set-goal').value = state.settings.goal;
       document.getElementById('set-contraceptive').value = state.settings.contraceptive;
+      document.getElementById('set-cycle-len').value = state.settings.defaultCycleLength || 28;
+      document.getElementById('set-period-len').value = state.settings.defaultPeriodLength || 5;
       document.getElementById('set-reminder').value = state.settings.reminder || '';
       document.getElementById('set-discreet').value = state.settings.discreetMode || 'default';
 
       const notes = {
-        none: 'Algoritmo operando em modo fisiológico completo (estimando janela fértil e ovulação).',
+        none: 'Algoritmo operando em modo fisiológico completo (fase lútea fixa de ~14 dias antes da próxima menstruação, janela fértil de 6 dias).',
         pill: 'Algoritmo adaptado: sangramentos na pausa são classificados como sangramento de privação, sem janela fértil.',
         hormonal_iud: 'Algoritmo adaptado: supressão ovulatória parcial/total considerada; escapes são comuns.',
         copper_iud: 'Algoritmo adaptado: ciclo hormonal natural mantido, com possível aumento de fluxo menstrual.',
@@ -1990,15 +2171,26 @@
       if (!action) return;
 
       if (action === 'finish-onboarding') {
-        const lastPeriod = document.getElementById('ob-last-period').value || toISODate(new Date());
-        const cycleLen = Number(document.getElementById('ob-cycle-len').value) || 28;
+        const lastPeriodStr = document.getElementById('ob-last-period').value || toISODate(new Date());
+        const cycleLen = Math.min(60, Math.max(18, Number(document.getElementById('ob-cycle-len').value) || 28));
+        const periodLen = Math.min(10, Math.max(2, Number(document.getElementById('ob-period-len').value) || 5));
+
         state.onboarded = true;
         state.settings.defaultCycleLength = cycleLen;
+        state.settings.defaultPeriodLength = periodLen;
         state.settings.goal = document.getElementById('ob-goal').value;
         state.settings.contraceptive = document.getElementById('ob-contraceptive').value;
-        if (!state.entries[lastPeriod]) {
-          state.entries[lastPeriod] = { libido: 0, flow: 'medium', tags: [] };
+
+        // Registra os dias iniciais da menstruação informada sem sobrescrever hoje se for posterior
+        const startD = parseISODate(lastPeriodStr);
+        const todayStr = toISODate(new Date());
+        for (let i = 0; i < periodLen; i++) {
+          const dStr = toISODate(addDays(startD, i));
+          if (dStr <= todayStr && !state.entries[dStr]) {
+            state.entries[dStr] = { libido: 0, flow: 'medium', tags: [] };
+          }
         }
+
         persistState();
         const obScreen = document.getElementById('onboarding-screen');
         obScreen.classList.remove('active');
@@ -2084,11 +2276,12 @@
       if (target.dataset.syncSettings === 'true') {
         state.settings.goal = document.getElementById('set-goal').value;
         state.settings.contraceptive = document.getElementById('set-contraceptive').value;
+        state.settings.defaultCycleLength = Math.min(60, Math.max(18, Number(document.getElementById('set-cycle-len').value) || 28));
+        state.settings.defaultPeriodLength = Math.min(10, Math.max(2, Number(document.getElementById('set-period-len').value) || 5));
         state.settings.reminder = document.getElementById('set-reminder').value.trim();
         state.settings.discreetMode = document.getElementById('set-discreet').value;
         persistState();
-        renderSettingsView();
-        renderTodayView();
+        renderAll();
         showToast('Preferências atualizadas');
       } else if (target.id === 'perm-phase' || target.id === 'perm-libido' || target.id === 'perm-symptoms') {
         state.duo.permissions.phase = document.getElementById('perm-phase').checked;
