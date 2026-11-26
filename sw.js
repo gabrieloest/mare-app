@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mare-app-cache-v9';
+const CACHE_NAME = 'mare-app-cache-v10';
 const BASE_PATH = '/mare-app';
 
 const ASSETS_TO_CACHE = [
@@ -10,23 +10,20 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
-  );
   self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(ASSETS_TO_CACHE.map((url) => cache.add(url)))
+    )
+  );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) =>
-      Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      )
-    )
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
@@ -39,50 +36,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  const url = new URL(event.request.url);
-  const isLocalAppShell =
-    url.origin === self.location.origin &&
-    (event.request.mode === 'navigate' ||
-      url.pathname.endsWith('.html') ||
-      url.pathname.endsWith('.css') ||
-      url.pathname.endsWith('.js') ||
-      url.pathname.endsWith('/mare-app') ||
-      url.pathname.endsWith('/mare-app/'));
-
-  if (isLocalAppShell) {
-    event.respondWith(
-      fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const copy = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          }
-          return networkResponse;
-        })
-        .catch(() =>
-          caches.match(event.request, { ignoreSearch: true }).then(
-            (cached) => cached || caches.match(`${BASE_PATH}/index.html`)
-          )
-        )
-    );
-    return;
-  }
-
   event.respondWith(
-    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-
-      return fetch(event.request).then((networkResponse) => {
+    fetch(event.request)
+      .then((networkResponse) => {
         if (
           networkResponse &&
           networkResponse.status === 200 &&
-          url.origin === self.location.origin
+          event.request.url.startsWith(self.location.origin)
         ) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return networkResponse;
-      });
-    })
+      })
+      .catch(() =>
+        caches.match(event.request, { ignoreSearch: true }).then(
+          (cached) => cached || caches.match(`${BASE_PATH}/index.html`)
+        )
+      )
   );
 });
