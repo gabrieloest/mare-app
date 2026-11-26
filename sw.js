@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mare-app-cache-v10';
+const CACHE_NAME = 'mare-app-cache-v12';
 const BASE_PATH = '/mare-app';
 
 const ASSETS_TO_CACHE = [

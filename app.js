@@ -762,14 +762,38 @@ function renderDuoView() {
 
   document.getElementById('duo-empathy-tip').textContent = empathyTip;
 
-  document.getElementById('silent-signals-caption').textContent = isPartner
-    ? 'Sinal enviado hoje pela usuária principal (somente leitura):'
-    : 'Sinalize seu tom de proximidade hoje com leveza, sem cobrança de resposta imediata:';
+  // 1. SINAIS SILENCIOSOS: parceiro vê apenas o sinal escolhido (ou aviso se nenhum)
+  const signalCaption = document.getElementById('silent-signals-caption');
+  const signalGrid = document.getElementById('silent-signals');
+  let emptySignalEl = document.getElementById('empty-signal-note');
+  if (!emptySignalEl) {
+    emptySignalEl = document.createElement('p');
+    emptySignalEl.id = 'empty-signal-note';
+    emptySignalEl.className = 'empty-partner-note';
+    signalGrid.parentNode.appendChild(emptySignalEl);
+  }
 
-  document.querySelectorAll('#silent-signals .signal-btn').forEach((btn) => {
-    btn.classList.toggle('active', btn.dataset.signal === activeSignal);
-  });
+  if (isPartner) {
+    signalCaption.textContent = activeSignal
+      ? 'Sinal compartilhado hoje pela usuária principal:'
+      : 'Nenhum sinal silencioso ativado hoje.';
+    emptySignalEl.style.display = 'none';
+    document.querySelectorAll('#silent-signals .signal-btn').forEach((btn) => {
+      const isSelected = btn.dataset.signal === activeSignal;
+      btn.classList.toggle('active', isSelected);
+      btn.style.display = isSelected ? 'flex' : 'none';
+    });
+  } else {
+    signalCaption.textContent =
+      'Sinalize seu tom de proximidade hoje com leveza, sem cobrança de resposta imediata:';
+    emptySignalEl.style.display = 'none';
+    document.querySelectorAll('#silent-signals .signal-btn').forEach((btn) => {
+      btn.style.display = 'flex';
+      btn.classList.toggle('active', btn.dataset.signal === activeSignal);
+    });
+  }
 
+  // Previsão de 14 dias
   const forecastContainer = document.getElementById('duo-forecast-strip');
   const forecast = Array.isArray(snapshot.forecast14) ? snapshot.forecast14 : [];
   forecastContainer.innerHTML = forecast
@@ -783,11 +807,12 @@ function renderDuoView() {
     )
     .join('');
 
+  // 2. O QUE AJUDA QUANDO TÔ ASSIM: parceiro vê apenas os cuidados ativos escolhidos
   const careContainer = document.getElementById('care-menu-chips');
   careContainer.innerHTML = '';
   const careList = isPartner ? snapshot.activeCareItems || [] : state.duo.careItems;
   if (isPartner && !careList.length) {
-    careContainer.innerHTML = `<span style="font-size:0.78rem; color:var(--text-muted);">Nenhum item selecionado no momento.</span>`;
+    careContainer.innerHTML = `<span class="empty-partner-note">Nenhum cuidado específico marcado no momento.</span>`;
   } else {
     careList.forEach((item) => {
       const chip = document.createElement('span');
@@ -828,10 +853,33 @@ function renderDuoView() {
       .join('');
   }
 
+  // 3. REPOSIÇÃO & APOIO MÚTUO: parceiro vê apenas os itens marcados pela usuária
   const mutualList = snapshot.mutualCare || [];
+  const mutualChipsContainer = document.getElementById('mutual-care-chips');
+  let emptyMutualEl = document.getElementById('empty-mutual-note');
+  if (!emptyMutualEl) {
+    emptyMutualEl = document.createElement('p');
+    emptyMutualEl.id = 'empty-mutual-note';
+    emptyMutualEl.className = 'empty-partner-note';
+    mutualChipsContainer.parentNode.appendChild(emptyMutualEl);
+  }
+
   document.querySelectorAll('#mutual-care-chips .chip').forEach((ch) => {
-    ch.classList.toggle('active', mutualList.includes(ch.dataset.m));
+    const isSelected = mutualList.includes(ch.dataset.m);
+    ch.classList.toggle('active', isSelected);
+    if (isPartner) {
+      ch.style.display = isSelected ? 'inline-block' : 'none';
+    } else {
+      ch.style.display = 'inline-block';
+    }
   });
+
+  if (isPartner && mutualList.length === 0) {
+    emptyMutualEl.textContent = 'Nenhuma reposição ou apoio solicitado no momento.';
+    emptyMutualEl.style.display = 'block';
+  } else {
+    emptyMutualEl.style.display = 'none';
+  }
 }
 
 function renderCalendar() {
@@ -1288,10 +1336,7 @@ document.addEventListener('click', async (event) => {
   }
 
   if (target.matches('#silent-signals .signal-btn')) {
-    if (state.role === 'partner') {
-      showToast('Somente a usuária principal altera o sinal do dia');
-      return;
-    }
+    if (state.role === 'partner') return;
     const signalKey = target.dataset.signal;
     const todayStr = toISODate(new Date());
     if (state.duo.signal === signalKey && state.duo.signalDate === todayStr) {
@@ -1321,10 +1366,7 @@ document.addEventListener('click', async (event) => {
   }
 
   if (target.matches('#mutual-care-chips .chip')) {
-    if (state.role === 'partner') {
-      showToast('Item do checklist visualizado');
-      return;
-    }
+    if (state.role === 'partner') return;
     const m = target.dataset.m;
     const idx = state.duo.mutualCare.indexOf(m);
     if (idx >= 0) state.duo.mutualCare.splice(idx, 1);

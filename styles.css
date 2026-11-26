@@ -779,3 +779,24 @@ select, input[type="text"], input[type="url"], input[type="password"], input[typ
 .print-only-header {
   display: none;
 }
+
+/* Ajustes visuais do Modo Parceiro (somente leitura limpa) */
+body.partner-mode .signal-btn {
+  cursor: default;
+  pointer-events: none;
+}
+
+body.partner-mode .signal-btn > span:last-child {
+  display: none;
+}
+
+body.partner-mode #care-menu-chips .chip,
+body.partner-mode #mutual-care-chips .chip {
+  cursor: default;
+}
+
+.empty-partner-note {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
