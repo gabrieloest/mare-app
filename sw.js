@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mare-app-cache-v8';
+const CACHE_NAME = 'mare-app-cache-v9';
 const BASE_PATH = '/mare-app';
 
 const ASSETS_TO_CACHE = [
@@ -39,11 +39,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  const isNavigation =
-    event.request.mode === 'navigate' ||
-    (event.request.headers.get('accept') || '').includes('text/html');
+  const url = new URL(event.request.url);
+  const isLocalAppShell =
+    url.origin === self.location.origin &&
+    (event.request.mode === 'navigate' ||
+      url.pathname.endsWith('.html') ||
+      url.pathname.endsWith('.css') ||
+      url.pathname.endsWith('.js') ||
+      url.pathname.endsWith('/mare-app') ||
+      url.pathname.endsWith('/mare-app/'));
 
-  if (isNavigation) {
+  if (isLocalAppShell) {
     event.respondWith(
       fetch(event.request)
         .then((networkResponse) => {
@@ -54,21 +60,23 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(() =>
-          caches.match(event.request).then((cached) => cached || caches.match(`${BASE_PATH}/index.html`))
+          caches.match(event.request, { ignoreSearch: true }).then(
+            (cached) => cached || caches.match(`${BASE_PATH}/index.html`)
+          )
         )
     );
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       if (cachedResponse) return cachedResponse;
 
       return fetch(event.request).then((networkResponse) => {
         if (
           networkResponse &&
           networkResponse.status === 200 &&
-          event.request.url.startsWith(self.location.origin)
+          url.origin === self.location.origin
         ) {
           const responseClone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));

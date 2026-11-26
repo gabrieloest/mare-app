@@ -10,9 +10,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Maré" />
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='44' fill='%23161018'/%3E%3Cpath d='M24 108c24-28 48-28 72 0s48 28 72 0' fill='none' stroke='%23e07a5f' stroke-width='14' stroke-linecap='round'/%3E%3Cpath d='M24 138c24-28 48-28 72 0s48 28 72 0' fill='none' stroke='%23f4a261' stroke-width='10' stroke-linecap='round' opacity='0.65'/%3E%3Ccircle cx='96' cy='58' r='14' fill='%23e07a5f'/%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=9" />
 </head>
 <body>
   <div id="toast" class="toast">Salvo localmente com segurança</div>
@@ -233,7 +233,7 @@
       </div>
     </section>
 
-    <!-- VIEW 2: MODO DUO (SINCRONIZAÇÃO E2EE ENTRE DOIS CELULARES) -->
+    <!-- VIEW 2: MODO DUO -->
     <section id="view-duo" class="view">
       <div class="card">
         <div class="card-header">
@@ -244,7 +244,6 @@
           <span class="badge" id="duo-sync-badge">Local</span>
         </div>
 
-        <!-- MODO USUÁRIA PRINCIPAL -->
         <div id="duo-primary-sync-box">
           <div id="duo-unpaired-actions">
             <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">
@@ -275,7 +274,6 @@
           </details>
         </div>
 
-        <!-- MODO PARCEIRO(A) CONECTADO -->
         <div id="duo-partner-sync-box" style="display:none;">
           <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">
             Conectado como <strong>Parceiro(a)</strong> (leitura criptografada ponta a ponta). Nenhum dado íntimo sensível é exibido aqui.
@@ -287,7 +285,6 @@
         </div>
       </div>
 
-      <!-- AVISO DE PAUSA -->
       <div id="duo-paused-card" class="card" style="display:none; border-color:rgba(245,158,11,0.5);">
         <h3 style="font-size:0.98rem; margin-bottom:6px;">Compartilhamento Duo Pausado</h3>
         <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:12px;">
@@ -296,7 +293,6 @@
         <button type="button" class="btn-primary primary-only" data-action="toggle-duo-pause">Reativar compartilhamento Duo</button>
       </div>
 
-      <!-- CONTEÚDO COMPARTILHADO -->
       <div id="duo-active-content">
         <div class="climate-banner">
           <span class="badge" id="duo-climate-badge">Clima do Dia</span>
@@ -605,6 +601,6 @@
     </button>
   </nav>
 
-  <script src="app.js"></script>
+  <script src="./app.js?v=9"></script>
 </body>
 </html>
