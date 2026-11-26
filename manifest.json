@@ -6,19 +6,19 @@
   "scope": "/mare-app/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "background_color": "#161018",
+  "theme_color": "#161018",
   "lang": "pt-BR",
   "categories": ["health", "lifestyle", "medical"],
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='44' fill='%230f172a'/%3E%3Cpath d='M24 108c24-28 48-28 72 0s48 28 72 0' fill='none' stroke='%2310b981' stroke-width='14' stroke-linecap='round'/%3E%3Cpath d='M24 138c24-28 48-28 72 0s48 28 72 0' fill='none' stroke='%2334d399' stroke-width='10' stroke-linecap='round' opacity='0.6'/%3E%3Ccircle cx='96' cy='58' r='14' fill='%2310b981'/%3E%3C/svg%3E",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='44' fill='%23161018'/%3E%3Cpath d='M24 108c24-28 48-28 72 0s48 28 72 0' fill='none' stroke='%23e07a5f' stroke-width='14' stroke-linecap='round'/%3E%3Cpath d='M24 138c24-28 48-28 72 0s48 28 72 0' fill='none' stroke='%23f4a261' stroke-width='10' stroke-linecap='round' opacity='0.65'/%3E%3Ccircle cx='96' cy='58' r='14' fill='%23e07a5f'/%3E%3C/svg%3E",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='116' fill='%230f172a'/%3E%3Cpath d='M64 288c64-74 128-74 192 0s128 74 192 0' fill='none' stroke='%2310b981' stroke-width='36' stroke-linecap='round'/%3E%3Cpath d='M64 368c64-74 128-74 192 0s128 74 192 0' fill='none' stroke='%2334d399' stroke-width='26' stroke-linecap='round' opacity='0.6'/%3E%3Ccircle cx='256' cy='154' r='36' fill='%2310b981'/%3E%3C/svg%3E",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='116' fill='%23161018'/%3E%3Cpath d='M64 288c64-74 128-74 192 0s128 74 192 0' fill='none' stroke='%23e07a5f' stroke-width='36' stroke-linecap='round'/%3E%3Cpath d='M64 368c64-74 128-74 192 0s128 74 192 0' fill='none' stroke='%23f4a261' stroke-width='26' stroke-linecap='round' opacity='0.65'/%3E%3Ccircle cx='256' cy='154' r='36' fill='%23e07a5f'/%3E%3C/svg%3E",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
