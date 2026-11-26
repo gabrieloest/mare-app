@@ -129,7 +129,7 @@ function showToast(msg) {
   if (!el) return;
   el.textContent = msg;
   el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2300);
+  setTimeout(() => el.classList.remove('show'), 2500);
 }
 
 /* =========================================================================
@@ -331,7 +331,7 @@ function randomToken(len) {
 
 function parsePairCode(codeStr) {
   const clean = (codeStr || '').trim().toUpperCase();
-  const match = clean.match(/^MARE-([A-Z0-9]{4,8})-([A-Z0-9]{8,24})$/);
+  const match = clean.match(/^MARE-([A-Z0-9]{4,16})-([A-Z0-9]{8,32})$/);
   if (!match) return null;
   return { roomId: match[1], secret: match[2], fullCode: clean };
 }
@@ -470,14 +470,18 @@ async function pushDuoToFirebase(silent = false) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(encrypted)
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error(`HTTP ${res.status} ${errText}`);
+    }
     state.duo.lastSyncedAt = Date.now();
     persistState();
     updateDuoSyncStatusUI();
     if (!silent) showToast('Sincronizado com o Firebase (E2EE)');
   } catch (err) {
     if (badge) badge.textContent = 'Erro sync';
-    if (!silent) showToast('Erro ao sincronizar: verifique as regras do Firebase');
+    console.error('[Maré Sync]', err);
+    if (!silent) showToast(`Erro sync: ${err.message || 'verifique regras do Firebase'}`);
   }
 }
 
@@ -491,13 +495,16 @@ async function pullDuoFromFirebase(silent = false) {
 
   try {
     const res = await fetch(`${fbUrl}/duo_rooms/${state.duo.roomId}.json?t=${Date.now()}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error(`HTTP ${res.status} ${errText}`);
+    }
     const record = await res.json();
     if (!record) {
       state.partnerSnapshot = null;
       persistState();
       renderDuoView();
-      if (!silent) showToast('Sala vazia ou revogada pela usuária principal');
+      if (!silent) showToast('Sala vazia ou aguardando 1º envio');
       return;
     }
     const decrypted = await decryptDuoPayload(record, state.duo.roomSecret, state.duo.roomId);
@@ -508,7 +515,8 @@ async function pullDuoFromFirebase(silent = false) {
     if (!silent) showToast('Painel Duo atualizado');
   } catch (err) {
     if (badge) badge.textContent = 'Erro leitura';
-    if (!silent) showToast('Falha ao ler/descriptografar dados do Firebase');
+    console.error('[Maré Read]', err);
+    if (!silent) showToast(`Erro leitura: ${err.message || 'falha ao ler Firebase'}`);
   }
 }
 
@@ -1402,7 +1410,7 @@ document.addEventListener('click', async (event) => {
     const fbUrl = normalizeFirebaseUrl(document.getElementById('ob-fb-url').value || DEFAULT_FIREBASE_URL);
     const parsed = parsePairCode(document.getElementById('ob-pair-code').value);
     if (!parsed) {
-      showToast('Informe um código MARE-XXXX-YYYYYYYYYYYY válido');
+      showToast('Informe um código MARE-XXXXXXXXXX-YYYYYYYYYYYYYYYY válido');
       return;
     }
     state.onboarded = true;
@@ -1434,7 +1442,7 @@ document.addEventListener('click', async (event) => {
       document.getElementById('duo-fb-url').value || state.duo.firebaseUrl || DEFAULT_FIREBASE_URL
     );
     state.duo.firebaseUrl = fbUrl;
-    state.duo.roomId = randomToken(6);
+    state.duo.roomId = randomToken(10);
     state.duo.roomSecret = randomToken(16);
     state.duo.paused = false;
     persistState();
