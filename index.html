@@ -590,6 +590,7 @@
       background: var(--bg);
       z-index: 100;
       display: none;
+      pointer-events: none;
       flex-direction: column;
       justify-content: center;
       padding: 24px;
@@ -599,6 +600,7 @@
 
     .overlay.active {
       display: flex;
+      pointer-events: auto;
     }
 
     .pin-dots {
@@ -1756,9 +1758,18 @@
     }
 
     async function sha256(text) {
-      const data = new TextEncoder().encode(text);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+      if (window.crypto && crypto.subtle) {
+        const data = new TextEncoder().encode(text);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+      // Fallback determinístico caso a página seja aberta em contexto não-HTTPS local
+      let h = 2166136261;
+      for (let i = 0; i < text.length; i++) {
+        h ^= text.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return 'fallback_' + (h >>> 0).toString(16);
     }
 
     function lockAppNow() {
@@ -1798,6 +1809,10 @@
     }
 
     async function exportEncryptedBackup() {
+      if (!window.crypto || !crypto.subtle) {
+        showToast('Backup criptografado requer HTTPS');
+        return;
+      }
       const pass = document.getElementById('backup-passphrase').value;
       if (!pass || pass.length < 4) {
         showToast('Defina uma senha para proteger o backup');
@@ -1869,20 +1884,15 @@
       }
     }
 
-    /* ==========================================================
-       DELEGAÇÃO CENTRALIZADA DE CLIQUES & ALTERAÇÕES
-       ========================================================== */
     document.addEventListener('click', async (event) => {
       const target = event.target.closest('button, .chip, .cal-day');
       if (!target) return;
 
-      // 1. Navegação inferior
       if (target.matches('.nav-item[data-view]')) {
         switchView(target.dataset.view);
         return;
       }
 
-      // 2. Escala de libido
       if (target.matches('#libido-scale .libido-btn')) {
         const already = target.classList.contains('selected');
         document.querySelectorAll('#libido-scale .libido-btn').forEach(b => b.classList.remove('selected'));
@@ -1890,20 +1900,17 @@
         return;
       }
 
-      // 3. Fluxo menstrual (seleção única)
       if (target.matches('#flow-chips .chip')) {
         document.querySelectorAll('#flow-chips .chip').forEach(c => c.classList.remove('active'));
         target.classList.add('active');
         return;
       }
 
-      // 4. Tags de saúde sexual, sintomas e fatores (múltipla)
       if (target.matches('#sex-chips .chip, #symptom-chips .chip, #factor-chips .chip')) {
         target.classList.toggle('active');
         return;
       }
 
-      // 5. Sinais silenciosos Duo
       if (target.matches('#silent-signals .signal-btn')) {
         const signalKey = target.dataset.signal;
         const todayStr = toISODate(new Date());
@@ -1920,7 +1927,6 @@
         return;
       }
 
-      // 6. Itens do menu de cuidados Duo
       if (target.dataset.careItem) {
         const item = target.dataset.careItem;
         const idx = state.duo.activeCareItems.indexOf(item);
@@ -1931,7 +1937,6 @@
         return;
       }
 
-      // 7. Reposição / cuidado mútuo Duo
       if (target.matches('#mutual-care-chips .chip')) {
         const m = target.dataset.m;
         const idx = state.duo.mutualCare.indexOf(m);
@@ -1942,7 +1947,6 @@
         return;
       }
 
-      // 8. Remover plano Duo
       if (target.dataset.removePlan) {
         state.duo.plans = state.duo.plans.filter(p => p.id !== target.dataset.removePlan);
         persistState();
@@ -1950,14 +1954,12 @@
         return;
       }
 
-      // 9. Dia do calendário
       if (target.matches('.cal-day[data-date]')) {
         selectedCalDate = target.dataset.date;
         renderCalendar();
         return;
       }
 
-      // 10. Teclado PIN
       if (target.dataset.pinKey) {
         const k = target.dataset.pinKey;
         if (k === '⌫') {
@@ -1984,7 +1986,6 @@
         return;
       }
 
-      // 11. Ações nomeadas
       const action = target.dataset.action;
       if (!action) return;
 
@@ -2118,7 +2119,9 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          reg.update().catch(() => {});
+        }).catch(() => {});
       });
     }
 
