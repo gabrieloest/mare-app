@@ -50,13 +50,18 @@
       padding-bottom: calc(84px + var(--safe-bottom));
     }
 
+    button, input, select, textarea, .chip, .cal-day {
+      touch-action: manipulation;
+    }
+
     .app-shell {
       max-width: 520px;
       margin: 0 auto;
       padding: 16px 16px 24px;
+      position: relative;
+      z-index: 1;
     }
 
-    /* Header */
     header {
       display: flex;
       align-items: center;
@@ -64,7 +69,7 @@
       padding: 8px 0 18px;
       position: sticky;
       top: 0;
-      background: rgba(15, 23, 42, 0.92);
+      background: rgba(15, 23, 42, 0.94);
       backdrop-filter: blur(12px);
       z-index: 20;
     }
@@ -117,7 +122,6 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: 0.2s;
     }
 
     .btn-pill.accent {
@@ -132,26 +136,14 @@
       border-color: rgba(245, 158, 11, 0.45);
     }
 
-    .btn-pill:active {
-      transform: scale(0.96);
-    }
-
-    /* Views */
     .view {
       display: none;
-      animation: fadeIn 0.22s ease;
     }
 
     .view.active {
       display: block;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Cards */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -184,7 +176,6 @@
       white-space: nowrap;
     }
 
-    /* Cycle Ring & Status */
     .wave-hero {
       background: linear-gradient(145deg, #162238 0%, #0f172a 100%);
       border: 1px solid var(--border);
@@ -264,7 +255,6 @@
       color: var(--text);
     }
 
-    /* Quick Libido Check-in */
     .libido-scale {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -280,13 +270,13 @@
       color: var(--text);
       cursor: pointer;
       text-align: center;
-      transition: 0.18s;
     }
 
     .libido-btn .lvl {
       font-size: 1.15rem;
       font-weight: 800;
       display: block;
+      pointer-events: none;
     }
 
     .libido-btn .lbl {
@@ -294,6 +284,7 @@
       color: var(--text-muted);
       display: block;
       margin-top: 2px;
+      pointer-events: none;
     }
 
     .libido-btn.selected {
@@ -306,7 +297,6 @@
       color: var(--text);
     }
 
-    /* Chips / Tags */
     .chip-group {
       display: flex;
       flex-wrap: wrap;
@@ -322,7 +312,6 @@
       border-radius: 999px;
       font-size: 0.78rem;
       cursor: pointer;
-      transition: 0.15s;
       user-select: none;
     }
 
@@ -339,7 +328,6 @@
       color: #fecdd3;
     }
 
-    /* Form Controls */
     .field-group {
       margin-bottom: 14px;
     }
@@ -364,10 +352,6 @@
       outline: none;
     }
 
-    select:focus, input:focus, textarea:focus {
-      border-color: var(--accent);
-    }
-
     .btn-primary {
       width: 100%;
       background: var(--accent);
@@ -378,11 +362,6 @@
       font-size: 0.92rem;
       font-weight: 700;
       cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .btn-primary:active {
-      transform: scale(0.98);
     }
 
     .btn-secondary {
@@ -396,7 +375,6 @@
       cursor: pointer;
     }
 
-    /* Duo Mode Specifics */
     .climate-banner {
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(56, 189, 248, 0.12));
       border: 1px solid rgba(16, 185, 129, 0.35);
@@ -426,7 +404,6 @@
       cursor: pointer;
       font-size: 0.86rem;
       font-weight: 600;
-      transition: 0.18s;
     }
 
     .signal-btn small {
@@ -435,6 +412,7 @@
       font-weight: 400;
       color: var(--text-muted);
       margin-top: 2px;
+      pointer-events: none;
     }
 
     .signal-btn.active {
@@ -469,7 +447,6 @@
       font-size: 0.82rem;
     }
 
-    /* Calendar */
     .cal-nav {
       display: flex;
       justify-content: space-between;
@@ -540,6 +517,7 @@
       gap: 2px;
       margin-top: 2px;
       height: 4px;
+      pointer-events: none;
     }
 
     .dot {
@@ -563,20 +541,18 @@
       gap: 5px;
     }
 
-    /* Charts */
     .chart-box {
       width: 100%;
       overflow-x: auto;
       padding-top: 6px;
     }
 
-    /* Bottom Navigation */
     .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(15, 23, 42, 0.95);
+      background: rgba(15, 23, 42, 0.96);
       backdrop-filter: blur(14px);
       border-top: 1px solid var(--border);
       display: flex;
@@ -600,11 +576,14 @@
       border-radius: 10px;
     }
 
+    .nav-item svg, .nav-item span {
+      pointer-events: none;
+    }
+
     .nav-item.active {
       color: var(--accent);
     }
 
-    /* Overlays */
     .overlay {
       position: fixed;
       inset: 0;
@@ -660,10 +639,6 @@
       cursor: pointer;
     }
 
-    .key-btn:active {
-      background: var(--accent-soft);
-    }
-
     .toast {
       position: fixed;
       top: 16px;
@@ -676,15 +651,14 @@
       padding: 10px 18px;
       border-radius: 999px;
       z-index: 200;
-      transition: transform 0.3s ease;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      transition: transform 0.25s ease;
+      pointer-events: none;
     }
 
     .toast.show {
       transform: translateX(-50%) translateY(0);
     }
 
-    /* Runtime Diagnostic Banner */
     #runtime-error-box {
       display: none;
       background: rgba(244, 63, 94, 0.12);
@@ -791,7 +765,7 @@
         </select>
       </div>
 
-      <button class="btn-primary" onclick="finishOnboarding()">Começar a mapear minha Maré</button>
+      <button type="button" class="btn-primary" data-action="finish-onboarding">Começar a mapear minha Maré</button>
     </div>
   </div>
 
@@ -810,13 +784,8 @@
         </div>
       </div>
       <div class="header-actions">
-        <button id="install-btn" class="btn-pill accent" style="display:none;" title="Instalar aplicativo">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
-          Instalar
-        </button>
-        <button class="btn-pill" onclick="lockAppNow()" id="quick-lock-btn" style="display:none;" title="Bloquear agora">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </button>
+        <button type="button" id="install-btn" class="btn-pill accent" style="display:none;" title="Instalar aplicativo">Instalar</button>
+        <button type="button" class="btn-pill" data-action="lock-now" id="quick-lock-btn" style="display:none;" title="Bloquear agora">Bloquear</button>
       </div>
     </header>
 
@@ -824,8 +793,8 @@
       <strong>Diagnóstico de execução:</strong>
       <div id="runtime-error-msg" style="margin:6px 0 10px; font-family:monospace; word-break:break-word;"></div>
       <div style="display:flex; gap:8px;">
-        <button class="btn-secondary" onclick="location.reload()">Recarregar</button>
-        <button class="btn-secondary" onclick="wipeAllData()">Resetar estado local</button>
+        <button type="button" class="btn-secondary" data-action="reload-page">Recarregar</button>
+        <button type="button" class="btn-secondary" data-action="wipe-data">Resetar estado local</button>
       </div>
     </div>
 
@@ -856,7 +825,6 @@
         <div id="contraceptive-banner" style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08); font-size:0.76rem; color:var(--text-muted); display:none;"></div>
       </div>
 
-      <!-- Check-in Diário Rápido (<15s) -->
       <div class="card">
         <div class="card-header">
           <span class="card-title">Check-in Rápido • <span id="checkin-date-label">Hoje</span></span>
@@ -923,7 +891,7 @@
           </div>
         </div>
 
-        <button class="btn-primary" onclick="saveDailyEntry()">Salvar Check-in do Dia</button>
+        <button type="button" class="btn-primary" data-action="save-entry">Salvar Check-in do Dia</button>
       </div>
     </section>
 
@@ -935,7 +903,7 @@
             <span class="card-title">Maré Duo • Visão Local do Casal</span>
             <div style="font-size:0.74rem; color:var(--text-muted);" id="duo-status-caption">Compartilhamento ativo neste aparelho</div>
           </div>
-          <button id="duo-pause-btn" class="btn-pill warn" onclick="toggleDuoPause()">Pausar</button>
+          <button type="button" id="duo-pause-btn" class="btn-pill warn" data-action="toggle-duo-pause">Pausar</button>
         </div>
       </div>
 
@@ -944,7 +912,7 @@
         <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:12px;">
           O painel do parceiro/parceira está oculto no momento. Você pode reativar quando quiser, sem precisar justificar.
         </p>
-        <button class="btn-primary" onclick="toggleDuoPause()">Reativar visão Duo</button>
+        <button type="button" class="btn-primary" data-action="toggle-duo-pause">Reativar visão Duo</button>
       </div>
 
       <div id="duo-active-content">
@@ -964,21 +932,21 @@
             Sinalize seu tom de proximidade hoje com leveza, sem cobrança de resposta imediata:
           </p>
           <div class="signal-grid" id="silent-signals">
-            <button type="button" class="signal-btn" data-signal="in_the_mood" onclick="setSilentSignal('in_the_mood')">
+            <button type="button" class="signal-btn" data-signal="in_the_mood">
               <div>
                 Estou no clima
                 <small>Abertura e interesse para intimidade sexual hoje</small>
               </div>
               <span>›</span>
             </button>
-            <button type="button" class="signal-btn" data-signal="affection_only" onclick="setSilentSignal('affection_only')">
+            <button type="button" class="signal-btn" data-signal="affection_only">
               <div>
                 Quero carinho, sem sexo
                 <small>Vontade de toque, colo ou proximidade sem expectativa sexual</small>
               </div>
               <span>›</span>
             </button>
-            <button type="button" class="signal-btn" data-signal="need_space" onclick="setSilentSignal('need_space')">
+            <button type="button" class="signal-btn" data-signal="need_space">
               <div>
                 Hoje preciso de espaço
                 <small>Bateria baixa ou vontade de ficar mais na sua</small>
@@ -1002,7 +970,7 @@
           <div class="chip-group" id="care-menu-chips"></div>
           <div style="display:flex; gap:8px; margin-top:12px;">
             <input type="text" id="new-care-item" placeholder="Adicionar cuidado (ex: massagem nos pés)" />
-            <button class="btn-secondary" onclick="addCareItem()">+</button>
+            <button type="button" class="btn-secondary" data-action="add-care-item">+</button>
           </div>
         </div>
 
@@ -1014,16 +982,16 @@
             <input type="date" id="duo-plan-date" />
             <input type="text" id="duo-plan-title" placeholder="Ex: Viagem, jantar, folga" />
           </div>
-          <button class="btn-secondary" style="width:100%;" onclick="addDuoPlan()">Adicionar plano ao calendário do casal</button>
+          <button type="button" class="btn-secondary" style="width:100%;" data-action="add-duo-plan">Adicionar plano ao calendário do casal</button>
           <div id="duo-plans-list"></div>
 
           <div style="border-top:1px solid var(--border); margin-top:14px; padding-top:12px;">
             <label class="field-label">Reposição & Apoio Mútuo</label>
             <div class="chip-group" id="mutual-care-chips">
-              <span class="chip" data-m="condoms" onclick="toggleMutualCare('condoms')">Repor preservativos</span>
-              <span class="chip" data-m="lubricant" onclick="toggleMutualCare('lubricant')">Repor lubrificante</span>
-              <span class="chip" data-m="pill_support" onclick="toggleMutualCare('pill_support')">Apoio no horário do método</span>
-              <span class="chip" data-m="comfort_kit" onclick="toggleMutualCare('comfort_kit')">Bolsa térmica / chás</span>
+              <span class="chip" data-m="condoms">Repor preservativos</span>
+              <span class="chip" data-m="lubricant">Repor lubrificante</span>
+              <span class="chip" data-m="pill_support">Apoio no horário do método</span>
+              <span class="chip" data-m="comfort_kit">Bolsa térmica / chás</span>
             </div>
           </div>
         </div>
@@ -1035,15 +1003,15 @@
           </div>
           <div class="toggle-row">
             <span>Mostrar Clima / Fase do ciclo</span>
-            <input type="checkbox" id="perm-phase" onchange="updateDuoPermissions()" />
+            <input type="checkbox" id="perm-phase" />
           </div>
           <div class="toggle-row">
             <span>Mostrar Termômetro de Libido / Desejo</span>
-            <input type="checkbox" id="perm-libido" onchange="updateDuoPermissions()" />
+            <input type="checkbox" id="perm-libido" />
           </div>
           <div class="toggle-row">
             <span>Mostrar sintomas selecionados (cólica, fadiga)</span>
-            <input type="checkbox" id="perm-symptoms" onchange="updateDuoPermissions()" />
+            <input type="checkbox" id="perm-symptoms" />
           </div>
           <p style="font-size:0.73rem; color:var(--text-muted); margin-top:8px;">
             Masturbação, dor íntima detalhada e anotações pessoais nunca são exibidos na visão Duo.
@@ -1056,9 +1024,9 @@
     <section id="view-calendar" class="view">
       <div class="card">
         <div class="cal-nav">
-          <button class="btn-secondary" onclick="changeMonth(-1)">‹ Anterior</button>
+          <button type="button" class="btn-secondary" data-action="prev-month">‹ Anterior</button>
           <strong id="cal-month-title">Mês Ano</strong>
-          <button class="btn-secondary" onclick="changeMonth(1)">Próximo ›</button>
+          <button type="button" class="btn-secondary" data-action="next-month">Próximo ›</button>
         </div>
 
         <div class="cal-grid" id="cal-weekdays">
@@ -1082,7 +1050,7 @@
       <div class="card" id="cal-day-detail">
         <div class="card-header">
           <span class="card-title" id="selected-day-heading">Selecione um dia no calendário</span>
-          <button class="btn-pill accent" onclick="editSelectedDayInToday()">Editar dia</button>
+          <button type="button" class="btn-pill accent" data-action="edit-selected-day">Editar dia</button>
         </div>
         <p id="selected-day-summary" style="font-size:0.84rem; color:var(--text-muted);">
           Toque em qualquer data acima para visualizar ou registrar fluxo, sintomas e desejo sexual.
@@ -1122,7 +1090,7 @@
         <div id="stats-summary" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
       </div>
 
-      <button class="btn-primary no-print" onclick="exportClinicalPDF()">
+      <button type="button" class="btn-primary no-print" data-action="export-pdf">
         Exportar Relatório Limpo em PDF (Ginecologia / Terapia)
       </button>
     </section>
@@ -1135,7 +1103,7 @@
         </div>
         <div class="field-group">
           <label class="field-label">Objetivo de acompanhamento</label>
-          <select id="set-goal" onchange="updateSettings()">
+          <select id="set-goal" data-sync-settings="true">
             <option value="know_body">Conhecer meu corpo</option>
             <option value="libido">Acompanhar libido/bem-estar</option>
             <option value="avoid_pregnancy">Evitar gravidez</option>
@@ -1144,7 +1112,7 @@
         </div>
         <div class="field-group">
           <label class="field-label">Método contraceptivo</label>
-          <select id="set-contraceptive" onchange="updateSettings()">
+          <select id="set-contraceptive" data-sync-settings="true">
             <option value="none">Nenhum / Barreira (ciclo natural)</option>
             <option value="pill">Pílula anticoncepcional</option>
             <option value="hormonal_iud">DIU Hormonal</option>
@@ -1156,7 +1124,7 @@
         </div>
         <div class="field-group">
           <label class="field-label">Lembrete diário de contraceptivo / check-in</label>
-          <input type="text" id="set-reminder" placeholder="Ex: 21:00 — Pílula / Check-in" onchange="updateSettings()" />
+          <input type="text" id="set-reminder" data-sync-settings="true" placeholder="Ex: 21:00 — Pílula / Check-in" />
         </div>
         <p id="contraceptive-info-box" style="font-size:0.78rem; color:var(--text-muted); background:rgba(255,255,255,0.03); padding:10px; border-radius:10px;"></p>
       </div>
@@ -1169,7 +1137,7 @@
 
         <div class="field-group">
           <label class="field-label">Modo Discreto (Aparência do App)</label>
-          <select id="set-discreet" onchange="updateSettings()">
+          <select id="set-discreet" data-sync-settings="true">
             <option value="default">Padrão — Maré (Ciclo & Libido)</option>
             <option value="discreet">Discreto — Notas & Hidratação (oculta termos íntimos)</option>
           </select>
@@ -1179,8 +1147,8 @@
           <label class="field-label">Bloqueio por PIN de 4 dígitos (Local)</label>
           <div style="display:flex; gap:8px;">
             <input type="password" id="set-pin" maxlength="4" inputmode="numeric" placeholder="Novo PIN (4 números)" />
-            <button class="btn-secondary" onclick="savePin()">Ativar PIN</button>
-            <button class="btn-secondary" onclick="removePin()">Remover</button>
+            <button type="button" class="btn-secondary" data-action="save-pin">Ativar PIN</button>
+            <button type="button" class="btn-secondary" data-action="remove-pin">Remover</button>
           </div>
         </div>
 
@@ -1191,10 +1159,10 @@
           </p>
           <input type="password" id="backup-passphrase" placeholder="Senha forte para criptografar/restaurar" style="margin-bottom:8px;" />
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-            <button class="btn-secondary" onclick="exportEncryptedBackup()">Exportar Backup</button>
+            <button type="button" class="btn-secondary" data-action="export-backup">Exportar Backup</button>
             <label class="btn-secondary" style="text-align:center; cursor:pointer;">
               Restaurar Backup
-              <input type="file" id="import-backup-file" accept=".mare,.json" style="display:none;" onchange="importEncryptedBackup(event)" />
+              <input type="file" id="import-backup-file" accept=".mare,.json" style="display:none;" />
             </label>
           </div>
         </div>
@@ -1202,7 +1170,7 @@
         <div style="border-top:1px solid var(--border); padding-top:12px; margin-top:12px; font-size:0.75rem; color:var(--text-muted);">
           <strong>Compromisso de Privacidade:</strong> Zero rastreadores, zero venda ou compartilhamento de dados íntimos. Todos os registros ficam exclusivamente no <code>localStorage</code> deste dispositivo.
           <div style="margin-top:10px;">
-            <button class="btn-secondary" style="color:var(--menstrual); border-color:rgba(244,63,94,0.4);" onclick="wipeAllData()">Apagar todos os dados locais</button>
+            <button type="button" class="btn-secondary" style="color:var(--menstrual); border-color:rgba(244,63,94,0.4);" data-action="wipe-data">Apagar todos os dados locais</button>
           </div>
         </div>
       </div>
@@ -1211,51 +1179,30 @@
 
   <!-- BOTTOM NAVIGATION -->
   <nav class="bottom-nav">
-    <button class="nav-item active" data-view="today" onclick="switchView('today', this)">
+    <button type="button" class="nav-item active" data-view="today">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
       <span>Hoje</span>
     </button>
-    <button class="nav-item" data-view="duo" onclick="switchView('duo', this)">
+    <button type="button" class="nav-item" data-view="duo">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <span>Duo</span>
     </button>
-    <button class="nav-item" data-view="calendar" onclick="switchView('calendar', this)">
+    <button type="button" class="nav-item" data-view="calendar">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
       <span>Calendário</span>
     </button>
-    <button class="nav-item" data-view="insights" onclick="switchView('insights', this)">
+    <button type="button" class="nav-item" data-view="insights">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 4 3 5-6"/></svg>
       <span>Insights</span>
     </button>
-    <button class="nav-item" data-view="settings" onclick="switchView('settings', this)">
+    <button type="button" class="nav-item" data-view="settings">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       <span>Privacidade</span>
     </button>
   </nav>
 
   <script>
-    /* ==========================================================
-       0. DIAGNÓSTICO & PROTEÇÃO CONTRA TELA ESCURA
-       ========================================================== */
-    function reportRuntimeError(message) {
-      try {
-        console.error('[Maré]', message);
-        const box = document.getElementById('runtime-error-box');
-        const msgEl = document.getElementById('runtime-error-msg');
-        if (box && msgEl) {
-          msgEl.textContent = String(message);
-          box.style.display = 'block';
-        }
-      } catch (_) {}
-    }
-
-    window.addEventListener('error', (event) => {
-      reportRuntimeError(event.message || 'Erro inesperado no script');
-    });
-
-    window.addEventListener('unhandledrejection', (event) => {
-      reportRuntimeError(event.reason?.message || event.reason || 'Promessa rejeitada sem tratamento');
-    });
+    const STORAGE_KEY = 'mare_pwa_state_v1';
 
     function cloneDefaultState() {
       return JSON.parse(JSON.stringify({
@@ -1271,11 +1218,7 @@
         },
         duo: {
           paused: false,
-          permissions: {
-            phase: true,
-            libido: true,
-            symptoms: true
-          },
+          permissions: { phase: true, libido: true, symptoms: true },
           signal: null,
           signalDate: null,
           careItems: ['Massagem nos pés ou costas', 'Água / chá / algo leve', 'Companhia tranquila sem pressão', 'Tempo sozinha(o)'],
@@ -1287,18 +1230,20 @@
       }));
     }
 
-    /* ==========================================================
-       1. ESTADO LOCAL & ARQUITETURA PRIVACY-FIRST
-       ========================================================== */
-    const STORAGE_KEY = 'mare_pwa_state_v1';
-    const defaultState = cloneDefaultState();
+    function reportRuntimeError(message) {
+      try {
+        console.error('[Maré]', message);
+        const box = document.getElementById('runtime-error-box');
+        const msgEl = document.getElementById('runtime-error-msg');
+        if (box && msgEl) {
+          msgEl.textContent = String(message);
+          box.style.display = 'block';
+        }
+      } catch (_) {}
+    }
 
-    let state = loadState();
-    let activeDate = toISODate(new Date());
-    let calCursor = new Date();
-    let selectedCalDate = activeDate;
-    let deferredInstallPrompt = null;
-    let pinBuffer = '';
+    window.addEventListener('error', (e) => reportRuntimeError(e.message || 'Erro de execução'));
+    window.addEventListener('unhandledrejection', (e) => reportRuntimeError(e.reason?.message || e.reason || 'Erro assíncrono'));
 
     function loadState() {
       try {
@@ -1313,110 +1258,29 @@
           duo: {
             ...base.duo,
             ...(parsed && parsed.duo ? parsed.duo : {}),
-            permissions: {
-              ...base.duo.permissions,
-              ...(parsed && parsed.duo && parsed.duo.permissions ? parsed.duo.permissions : {})
-            }
+            permissions: { ...base.duo.permissions, ...(parsed && parsed.duo && parsed.duo.permissions ? parsed.duo.permissions : {}) }
           },
           entries: parsed && typeof parsed.entries === 'object' && parsed.entries !== null ? parsed.entries : {}
         };
       } catch (e) {
-        reportRuntimeError('Estado local corrompido recuperado com segurança: ' + (e.message || e));
         return cloneDefaultState();
       }
     }
+
+    let state = loadState();
+    let activeDate = toISODate(new Date());
+    let calCursor = new Date();
+    let selectedCalDate = activeDate;
+    let deferredInstallPrompt = null;
+    let pinBuffer = '';
 
     function persistState() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       } catch (e) {
-        reportRuntimeError('Falha ao salvar no localStorage: ' + (e.message || e));
+        reportRuntimeError('Erro ao salvar no localStorage: ' + (e.message || e));
       }
     }
 
     function toISODate(d) {
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
-
-    function parseISODate(str) {
-      if (!str || typeof str !== 'string') return new Date();
-      const [y, m, d] = str.split('-').map(Number);
-      if (!y || !m || !d) return new Date();
-      return new Date(y, m - 1, d);
-    }
-
-    function diffDays(dateA, dateB) {
-      const a = new Date(dateA.getFullYear(), dateA.getMonth(), dateA.getDate());
-      const b = new Date(dateB.getFullYear(), dateB.getMonth(), dateB.getDate());
-      return Math.round((b - a) / 86400000);
-    }
-
-    function addDays(date, days) {
-      const copy = new Date(date);
-      copy.setDate(copy.getDate() + days);
-      return copy;
-    }
-
-    function showToast(msg) {
-      const el = document.getElementById('toast');
-      if (!el) return;
-      el.textContent = msg;
-      el.classList.add('show');
-      setTimeout(() => el.classList.remove('show'), 2400);
-    }
-
-    /* ==========================================================
-       2. ALGORITMO ADAPTATIVO DE CICLO E FASES HORMONAIS
-       ========================================================== */
-    function getCycleAnalysis(targetDateStr = toISODate(new Date())) {
-      const targetDate = parseISODate(targetDateStr);
-      const flowDates = Object.keys(state.entries || {})
-        .filter(d => state.entries[d] && ['light', 'medium', 'heavy'].includes(state.entries[d].flow))
-        .sort();
-
-      const periodStarts = [];
-      for (let i = 0; i < flowDates.length; i++) {
-        if (i === 0) {
-          periodStarts.push(flowDates[i]);
-        } else {
-          const prev = parseISODate(flowDates[i - 1]);
-          const curr = parseISODate(flowDates[i]);
-          if (diffDays(prev, curr) > 2) {
-            periodStarts.push(flowDates[i]);
-          }
-        }
-      }
-
-      let avgCycle = Number(state.settings.defaultCycleLength) || 28;
-      if (periodStarts.length >= 2) {
-        const lengths = [];
-        for (let i = 1; i < periodStarts.length; i++) {
-          const len = diffDays(parseISODate(periodStarts[i - 1]), parseISODate(periodStarts[i]));
-          if (len >= 18 && len <= 60) lengths.push(len);
-        }
-        if (lengths.length > 0) {
-          const recent = lengths.slice(-3);
-          avgCycle = Math.round(recent.reduce((a, b) => a + b, 0) / recent.length);
-        }
-      }
-
-      const lastStartStr = periodStarts.filter(d => d <= targetDateStr).pop() || periodStarts[0] || targetDateStr;
-      const lastStart = parseISODate(lastStartStr);
-      let cycleDay = diffDays(lastStart, targetDate) + 1;
-      if (cycleDay < 1) cycleDay = 1;
-
-      const isHormonalSuppressed = ['pill', 'ring', 'patch', 'implant', 'hormonal_iud'].includes(state.settings.contraceptive);
-      const lutealLength = 14;
-      const ovulationDay = Math.max(8, avgCycle - lutealLength);
-      const fertileStart = Math.max(6, ovulationDay - 4);
-      const fertileEnd = ovulationDay + 1;
-
-      let phaseKey = 'follicular';
-      let phaseName = 'Fase Folicular';
-      let phaseColor = '#38bdf8';
-      let phaseDesc = 'Estrogênio em elevação gradual; tendência de melhora na disposição e clareza mental.';
-
-      if
+      return `${d.getFullYear()}-${
