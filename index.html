@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Maré — Ciclo, Libido & Bem-Estar Íntimo</title>
+  <meta name="description" content="Rastreador privado de ciclo menstrual, libido e bem-estar íntimo. Mapeie suas ondas hormonais com total privacidade." />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Maré" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='44' fill='%230f172a'/%3E%3Cpath d='M24 108c24-28 48-28 72 0s48 28 72 0' fill='none' stroke='%2310b981' stroke-width='14' stroke-linecap='round'/%3E%3Cpath d='M24 138c24-28 48-28 72 0s48 28 72 0' fill='none' stroke='%2334d399' stroke-width='10' stroke-linecap='round' opacity='0.6'/%3E%3Ccircle cx='96' cy='58' r='14' fill='%2310b981'/%3E%3C/svg%3E" />
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-elevated: #1e293b;
+      --bg-card: #162033;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #10b981;
+      --accent-soft: rgba(16, 185, 129, 0.16);
+      --accent-hover: #059669;
+      --menstrual: #f43f5e;
+      --follicular: #38bdf8;
+      --ovulatory: #10b981;
+      --luteal: #a78bfa;
+      --warning: #f59e0b;
+      --radius: 16px;
+      --safe-bottom: env(safe-area-inset-bottom, 16px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      padding-bottom: calc(84px + var(--safe-bottom));
+    }
+
+    /* Layout Container */
+    .app-shell {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 16px 16px 24px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0 18px;
+      position: sticky;
+      top: 0;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(12px);
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+    }
+
+    .brand h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand span {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: block;
+      margin-top: -2px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-pill {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+    }
+
+    .btn-pill.accent {
+      background: var(--accent);
+      color: #042f2e;
+      border-color: var(--accent);
+    }
+
+    .btn-pill:active {
+      transform: scale(0.96);
+    }
+
+    /* Views */
+    .view {
+      display: none;
+      animation: fadeIn 0.22s ease;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    /* Cycle Ring & Status */
+    .wave-hero {
+      background: linear-gradient(145deg, #162238 0%, #0f172a 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px 16px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wave-grid {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .cycle-ring {
+      width: 112px;
+      height: 112px;
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+
+    .cycle-ring svg {
+      transform: rotate(-90deg);
+      width: 112px;
+      height: 112px;
+    }
+
+    .cycle-ring-center {
+      position: absolute;
+      text-align: center;
+    }
+
+    .cycle-day-num {
+      font-size: 1.55rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .cycle-day-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .phase-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+
+    .phase-desc {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .prediction-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pred-pill {
+      font-size: 0.74rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 4px 8px;
+      border-radius: 8px;
+      color: var(--text);
+    }
+
+    /* Quick Libido Check-in (<15s) */
+    .libido-scale {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .libido-btn {
+      background: var(--bg-elevated);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 4px;
+      color: var(--text);
+      cursor: pointer;
+      text-align: center;
+      transition: 0.18s;
+    }
+
+    .libido-btn .lvl {
+      font-size: 1.15rem;
+      font-weight: 800;
+      display: block;
+    }
+
+    .libido-btn .lbl {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .libido-btn.selected {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .libido-btn.selected .lbl {
+      color: var(--text);
+    }
+
+    /* Chips / Tags */
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: 0.15s;
+      user-select: none;
+    }
+
+    .chip.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .chip.menstrual.active {
+      background: rgba(244, 63, 94, 0.18);
+      border-color: var(--menstrual);
+      color: #fecdd3;
+    }
+
+    /* Form Controls */
+    .field-group {
+      margin-bottom: 14px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    select, input[type="text"], input[type="password"], input[type="date"], input[type="number"], textarea {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--accent);
+      color: #042f2e;
+      border: none;
+      padding: 13px;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Calendar */
+    .cal-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+    }
+
+    .cal-weekday {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding-bottom: 6px;
+    }
+
+    .cal-day {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      cursor: pointer;
+      position: relative;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid transparent;
+    }
+
+    .cal-day.empty {
+      background: transparent;
+      cursor: default;
+    }
+
+    .cal-day.today {
+      border-color: var(--accent);
+      font-weight: 800;
+    }
+
+    .cal-day.selected {
+      background: var(--bg-elevated);
+      border-color: #fff;
+    }
+
+    .cal-day.period {
+      background: rgba(244, 63, 94, 0.25);
+      color: #ffe4e6;
+      border-color: rgba(244, 63, 94, 0.5);
+    }
+
+    .cal-day.predicted-period {
+      border: 1px dashed var(--menstrual);
+    }
+
+    .cal-day.fertile {
+      background: rgba(16, 185, 129, 0.16);
+      color: #a7f3d0;
+    }
+
+    .cal-dots {
+      display: flex;
+      gap: 2px;
+      margin-top: 2px;
+      height: 4px;
+    }
+
+    .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Charts */
+    .chart-box {
+      width: 100%;
+      overflow-x: auto;
+      padding-top: 6px;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 6px calc(8px + var(--safe-bottom));
+      z-index: 30;
+    }
+
+    .nav-item {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 10px;
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+    }
+
+    /* Lock Screen & Onboarding Overlay */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .overlay.active {
+      display: flex;
+    }
+
+    .pin-dots {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin: 24px 0;
+    }
+
+    .pin-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      background: transparent;
+    }
+
+    .pin-dot.filled {
+      background: var(--accent);
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+
+    .key-btn {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 1.3rem;
+      font-weight: 700;
+      padding: 16px;
+      border-radius: 16px;
+      cursor: pointer;
+    }
+
+    .key-btn:active {
+      background: var(--accent-soft);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-80px);
+      background: var(--accent);
+      color: #042f2e;
+      font-weight: 700;
+      font-size: 0.84rem;
+      padding: 10px 18px;
+      border-radius: 999px;
+      z-index: 200;
+      transition: transform 0.3s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Print / PDF Clean Report */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+      }
+      header, .bottom-nav, .no-print {
+        display: none !important;
+      }
+      .view {
+        display: none !important;
+      }
+      #view-insights {
+        display: block !important;
+      }
+      .card {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        break-inside: avoid;
+      }
+      .print-only-header {
+        display: block !important;
+        margin-bottom: 16px;
+        border-bottom: 2px solid #0f172a;
+        padding-bottom: 8px;
+      }
+    }
+
+    .print-only-header {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="toast" class="toast">Salvo localmente com segurança</div>
+
+  <!-- LOCK SCREEN -->
+  <div id="lock-screen" class="overlay">
+    <div style="text-align:center;">
+      <div class="brand-logo" style="margin:0 auto 12px; width:48px; height:48px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h2 id="lock-title" style="font-size:1.25rem;">Maré Protegido</h2>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-top:4px;">Digite seu PIN de 4 dígitos para acessar seus registros locais</p>
+    </div>
+    <div class="pin-dots" id="pin-dots">
+      <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+    </div>
+    <div class="keypad" id="keypad"></div>
+    <p id="lock-error" style="color:var(--menstrual); text-align:center; font-size:0.82rem; margin-top:14px; min-height:20px;"></p>
+  </div>
+
+  <!-- ONBOARDING OVERLAY -->
+  <div id="onboarding-screen" class="overlay" style="justify-content:flex-start; overflow-y:auto;">
+    <div style="margin-top:16px;">
+      <span class="badge">100% Privado • Armazenamento Local</span>
+      <h2 style="font-size:1.5rem; margin:10px 0 6px;">Boas-vindas à Maré</h2>
+      <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:18px;">
+        Mapeie suas ondas hormonais, desejo e bem-estar íntimo sem criar conta e sem enviar dados para servidores externos.
+      </p>
+
+      <div class="field-group">
+        <label class="field-label">Qual é o seu objetivo principal agora?</label>
+        <select id="ob-goal">
+          <option value="know_body">Conhecer meu corpo e padrões hormonais</option>
+          <option value="libido">Acompanhar libido e bem-estar íntimo</option>
+          <option value="avoid_pregnancy">Evitar gravidez (percepção de fertilidade)</option>
+          <option value="conceive">Tentar engravidar (janela fértil)</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Data de início da última menstruação (ou sangramento)</label>
+        <input type="date" id="ob-last-period" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Duração média do ciclo (dias)</label>
+        <input type="number" id="ob-cycle-len" value="28" min="18" max="60" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Método contraceptivo atual</label>
+        <select id="ob-contraceptive">
+          <option value="none">Nenhum / Métodos de barreira (camisinha)</option>
+          <option value="pill">Pílula anticoncepcional</option>
+          <option value="hormonal_iud">DIU Hormonal</option>
+          <option value="copper_iud">DIU de Cobre / Prata</option>
+          <option value="ring">Anel vaginal</option>
+          <option value="patch">Adesivo transdérmico</option>
+          <option value="implant">Implante subdérmico</option>
+        </select>
+      </div>
+
+      <button class="btn-primary" onclick="finishOnboarding()">Começar a mapear minha Maré</button>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div class="app-shell">
+    <header>
+      <div class="brand">
+        <div class="brand-logo" id="header-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+            <path d="M2 12c3-4 6-4 9 0s6 4 9 0"/><path d="M2 17c3-4 6-4 9 0s6 4 9 0" opacity="0.55"/>
+          </svg>
+        </div>
+        <div>
+          <h1 id="app-display-name">Maré</h1>
+          <span id="app-subtitle">Ondas hormonais & libido</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="install-btn" class="btn-pill accent" style="display:none;" title="Instalar aplicativo">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+          Instalar
+        </button>
+        <button class="btn-pill" onclick="lockAppNow()" id="quick-lock-btn" style="display:none;" title="Bloquear agora">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- VIEW 1: HOJE (CHECK-IN & RESUMO DO CICLO) -->
+    <section id="view-today" class="view active">
+      <div class="wave-hero">
+        <div class="wave-grid">
+          <div class="cycle-ring">
+            <svg viewBox="0 0 112 112">
+              <circle cx="56" cy="56" r="46" fill="none" stroke="#1e293b" stroke-width="10"/>
+              <circle id="cycle-progress-ring" cx="56" cy="56" r="46" fill="none" stroke="#10b981" stroke-width="10" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="200"/>
+            </svg>
+            <div class="cycle-ring-center">
+              <div class="cycle-day-num" id="hero-cycle-day">Dia 1</div>
+              <div class="cycle-day-label" id="hero-cycle-total">de 28 dias</div>
+            </div>
+          </div>
+          <div>
+            <div id="hero-phase-badge" class="phase-tag" style="background:rgba(16,185,129,0.18); color:#10b981;">
+              Fase Folicular
+            </div>
+            <p class="phase-desc" id="hero-phase-desc">
+              Energia e estrogênio em ascensão gradual.
+            </p>
+            <div class="prediction-pills" id="hero-predictions"></div>
+          </div>
+        </div>
+        <div id="contraceptive-banner" style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08); font-size:0.76rem; color:var(--text-muted); display:none;"></div>
+      </div>
+
+      <!-- Check-in Diário Rápido (<15s) -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Check-in Rápido • <span id="checkin-date-label">Hoje</span></span>
+          <span class="badge" id="checkin-status-badge">~15 seg</span>
+        </div>
+
+        <label class="field-label">Nível de Libido / Desejo Sexual</label>
+        <div class="libido-scale" id="libido-scale">
+          <button type="button" class="libido-btn" data-val="1"><span class="lvl">1</span><span class="lbl">Nula</span></button>
+          <button type="button" class="libido-btn" data-val="2"><span class="lvl">2</span><span class="lbl">Baixa</span></button>
+          <button type="button" class="libido-btn" data-val="3"><span class="lvl">3</span><span class="lbl">Média</span></button>
+          <button type="button" class="libido-btn" data-val="4"><span class="lvl">4</span><span class="lbl">Alta</span></button>
+          <button type="button" class="libido-btn" data-val="5"><span class="lvl">5</span><span class="lbl">Intensa</span></button>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Menstruação / Sangramento</label>
+          <div class="chip-group" id="flow-chips">
+            <span class="chip menstrual" data-val="none">Sem fluxo</span>
+            <span class="chip menstrual" data-val="spotting">Escape (spotting)</span>
+            <span class="chip menstrual" data-val="light">Fluxo leve</span>
+            <span class="chip menstrual" data-val="medium">Fluxo moderado</span>
+            <span class="chip menstrual" data-val="heavy">Fluxo intenso</span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Saúde Sexual & Intimidade</label>
+          <div class="chip-group" id="sex-chips">
+            <span class="chip" data-tag="sex_protected">Relação c/ proteção</span>
+            <span class="chip" data-tag="sex_unprotected">Relação s/ proteção</span>
+            <span class="chip" data-tag="masturbation">Masturbação</span>
+            <span class="chip" data-tag="orgasm">Orgasmo / Satisfação</span>
+            <span class="chip" data-tag="high_lubrication">Boa lubrificação</span>
+            <span class="chip" data-tag="dryness">Secura vaginal</span>
+            <span class="chip" data-tag="pain">Dor / Desconforto</span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Sintomas Físicos & Humor</label>
+          <div class="chip-group" id="symptom-chips">
+            <span class="chip" data-tag="cramps">Cólicas</span>
+            <span class="chip" data-tag="breast_tenderness">Seios sensíveis</span>
+            <span class="chip" data-tag="bloating">Inchaço</span>
+            <span class="chip" data-tag="headache">Dor de cabeça</span>
+            <span class="chip" data-tag="high_energy">Alta energia</span>
+            <span class="chip" data-tag="fatigue">Fadiga</span>
+            <span class="chip" data-tag="anxiety">Ansiedade</span>
+            <span class="chip" data-tag="irritability">Irritabilidade</span>
+            <span class="chip" data-tag="good_mood">Disposição / Leveza</span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Fatores Externos (Contexto do Desejo)</label>
+          <div class="chip-group" id="factor-chips">
+            <span class="chip" data-tag="good_sleep">Sono reparador</span>
+            <span class="chip" data-tag="poor_sleep">Sono ruim</span>
+            <span class="chip" data-tag="high_stress">Estresse alto</span>
+            <span class="chip" data-tag="alcohol">Álcool</span>
+            <span class="chip" data-tag="medication">Medicamentos</span>
+            <span class="chip" data-tag="exercise">Exercício físico</span>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="saveDailyEntry()">Salvar Check-in do Dia</button>
+      </div>
+    </section>
+
+    <!-- VIEW 2: CALENDÁRIO INTERATIVO -->
+    <section id="view-calendar" class="view">
+      <div class="card">
+        <div class="cal-nav">
+          <button class="btn-secondary" onclick="changeMonth(-1)">‹ Anterior</button>
+          <strong id="cal-month-title">Mês Ano</strong>
+          <button class="btn-secondary" onclick="changeMonth(1)">Próximo ›</button>
+        </div>
+
+        <div class="cal-grid" id="cal-weekdays">
+          <div class="cal-weekday">Dom</div>
+          <div class="cal-weekday">Seg</div>
+          <div class="cal-weekday">Ter</div>
+          <div class="cal-weekday">Qua</div>
+          <div class="cal-weekday">Qui</div>
+          <div class="cal-weekday">Sex</div>
+          <div class="cal-weekday">Sáb</div>
+        </div>
+        <div class="cal-grid" id="cal-days"></div>
+
+        <div class="legend">
+          <span><i class="dot" style="background:var(--menstrual)"></i> Menstruação</span>
+          <span><i class="dot" style="background:var(--accent)"></i> Janela Fértil</span>
+          <span><i class="dot" style="background:#38bdf8"></i> Registro de Libido</span>
+        </div>
+      </div>
+
+      <div class="card" id="cal-day-detail">
+        <div class="card-header">
+          <span class="card-title" id="selected-day-heading">Selecione um dia no calendário</span>
+          <button class="btn-pill accent" onclick="editSelectedDayInToday()">Editar dia</button>
+        </div>
+        <p id="selected-day-summary" style="font-size:0.84rem; color:var(--text-muted);">
+          Toque em qualquer data acima para visualizar ou registrar fluxo, sintomas e desejo sexual.
+        </p>
+      </div>
+    </section>
+
+    <!-- VIEW 3: INSIGHTS & RELATÓRIO MÉDICO -->
+    <section id="view-insights" class="view">
+      <div class="print-only-header">
+        <h2>Relatório de Ciclo, Libido e Saúde Íntima — Maré</h2>
+        <p id="print-meta" style="font-size:0.85rem; color:#475569;"></p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Correlação: Ciclo × Libido (Últimos 14 registros)</span>
+          <span class="badge">Tendência</span>
+        </div>
+        <div class="chart-box" id="libido-chart-container"></div>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">
+          Barras coloridas indicam a fase estimada do ciclo no dia do registro; a linha verde mostra a intensidade da libido (1 a 5).
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Leitura Educativa das Suas Ondas</span>
+        </div>
+        <div id="educational-insights" style="font-size:0.85rem; color:var(--text-muted); display:flex; flex-direction:column; gap:10px;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Resumo Estatístico do Histórico</span>
+        </div>
+        <div id="stats-summary" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+      </div>
+
+      <button class="btn-primary no-print" onclick="exportClinicalPDF()">
+        Exportar Relatório Limpo em PDF (Ginecologia / Terapia)
+      </button>
+    </section>
+
+    <!-- VIEW 4: PRIVACIDADE, CONTRACEPÇÃO & AJUSTES -->
+    <section id="view-settings" class="view">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Módulo Contraceptivo & Algoritmo</span>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Objetivo de acompanhamento</label>
+          <select id="set-goal" onchange="updateSettings()">
+            <option value="know_body">Conhecer meu corpo</option>
+            <option value="libido">Acompanhar libido/bem-estar</option>
+            <option value="avoid_pregnancy">Evitar gravidez</option>
+            <option value="conceive">Tentar engravidar</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Método contraceptivo</label>
+          <select id="set-contraceptive" onchange="updateSettings()">
+            <option value="none">Nenhum / Barreira (ciclo natural)</option>
+            <option value="pill">Pílula anticoncepcional</option>
+            <option value="hormonal_iud">DIU Hormonal</option>
+            <option value="copper_iud">DIU de Cobre / Prata</option>
+            <option value="ring">Anel vaginal</option>
+            <option value="patch">Adesivo transdérmico</option>
+            <option value="implant">Implante subdérmico</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Lembrete diário de contraceptivo / check-in</label>
+          <input type="text" id="set-reminder" placeholder="Ex: 21:00 — Pílula / Check-in" onchange="updateSettings()" />
+        </div>
+        <p id="contraceptive-info-box" style="font-size:0.78rem; color:var(--text-muted); background:rgba(255,255,255,0.03); padding:10px; border-radius:10px;"></p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Privacidade, Segurança & Modo Discreto</span>
+          <span class="badge">Privacy-First</span>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Modo Discreto (Aparência do App)</label>
+          <select id="set-discreet" onchange="updateSettings()">
+            <option value="default">Padrão — Maré (Ciclo & Libido)</option>
+            <option value="discreet">Discreto — Notas & Hidratação (oculta termos íntimos)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Bloqueio por PIN de 4 dígitos (Local)</label>
+          <div style="display:flex; gap:8px;">
+            <input type="password" id="set-pin" maxlength="4" inputmode="numeric" placeholder="Novo PIN (4 números)" />
+            <button class="btn-secondary" onclick="savePin()">Ativar PIN</button>
+            <button class="btn-secondary" onclick="removePin()">Remover</button>
+          </div>
+        </div>
+
+        <div class="field-group" style="margin-top:14px;">
+          <label class="field-label">Backup Criptografado (AES-GCM Ponta a Ponta)</label>
+          <p style="font-size:0.76rem; color:var(--text-muted); margin-bottom:8px;">
+            Seus dados nunca saem do aparelho automaticamente. Para trocar de celular, exporte um arquivo criptografado protegido por senha.
+          </p>
+          <input type="password" id="backup-passphrase" placeholder="Senha forte para criptografar/restaurar" style="margin-bottom:8px;" />
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <button class="btn-secondary" onclick="exportEncryptedBackup()">Exportar Backup</button>
+            <label class="btn-secondary" style="text-align:center; cursor:pointer;">
+              Restaurar Backup
+              <input type="file" id="import-backup-file" accept=".mare,.json" style="display:none;" onchange="importEncryptedBackup(event)" />
+            </label>
+          </div>
+        </div>
+
+        <div style="border-top:1px solid var(--border); padding-top:12px; margin-top:12px; font-size:0.75rem; color:var(--text-muted);">
+          <strong>Compromisso de Privacidade:</strong> Zero rastreadores, zero venda ou compartilhamento de dados íntimos. Todos os registros ficam exclusivamente no <code>localStorage</code> deste dispositivo.
+          <div style="margin-top:10px;">
+            <button class="btn-secondary" style="color:var(--menstrual); border-color:rgba(244,63,94,0.4);" onclick="wipeAllData()">Apagar todos os dados locais</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-view="today" onclick="switchView('today', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <span>Hoje</span>
+    </button>
+    <button class="nav-item" data-view="calendar" onclick="switchView('calendar', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <span>Calendário</span>
+    </button>
+    <button class="nav-item" data-view="insights" onclick="switchView('insights', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 4 3 5-6"/></svg>
+      <span>Insights</span>
+    </button>
+    <button class="nav-item" data-view="settings" onclick="switchView('settings', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Privacidade</span>
+    </button>
+  </nav>
+
+  <script>
+    /* ==========================================================
+       1. ESTADO LOCAL & ARQUITETURA PRIVACY-FIRST
+       ========================================================== */
+    const STORAGE_KEY = 'mare_pwa_state_v1';
+
+    const defaultState = {
+      onboarded: false,
+      settings: {
+        goal: 'know_body',
+        contraceptive: 'none',
+        reminder: '',
+        discreetMode: 'default',
+        pinHash: null,
+        defaultCycleLength: 28,
+        defaultPeriodLength: 5
+      },
+      // entries: { 'YYYY-MM-DD': { libido: 1..5, flow: 'none'|'spotting'|'light'|'medium'|'heavy', tags: [] } }
+      entries: {}
+    };
+
+    let state = loadState();
+    let activeDate = toISODate(new Date());
+    let calCursor = new Date();
+    let selectedCalDate = activeDate;
+    let deferredInstallPrompt = null;
+    let pinBuffer = '';
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(defaultState);
+        const parsed = JSON.parse(raw);
+        return {
+          ...structuredClone(defaultState),
+          ...parsed,
+          settings: { ...defaultState.settings, ...(parsed.settings || {}) }
+        };
+      } catch (e) {
+        return structuredClone(defaultState);
+      }
+    }
+
+    function persistState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function toISODate(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseISODate(str) {
+      const [y, m, d] = str.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function diffDays(dateA, dateB) {
+      const a = new Date(dateA.getFullYear(), dateA.getMonth(), dateA.getDate());
+      const b = new Date(dateB.getFullYear(), dateB.getMonth(), dateB.getDate());
+      return Math.round((b - a) / 86400000);
+    }
+
+    function addDays(date, days) {
+      const copy = new Date(date);
+      copy.setDate(copy.getDate() + days);
+      return copy;
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2400);
+    }
+
+    /* ==========================================================
+       2. ALGORITMO ADAPTATIVO DE CICLO E FASES HORMONAIS
+       ========================================================== */
+    function getCycleAnalysis(targetDateStr = toISODate(new Date())) {
+      const targetDate = parseISODate(targetDateStr);
+      // Identificar inícios de menstruação (dias com fluxo leve/moderado/intenso precedidos por dia sem fluxo)
+      const flowDates = Object.keys(state.entries)
+        .filter(d => ['light', 'medium', 'heavy'].includes(state.entries[d].flow))
+        .sort();
+
+      const periodStarts = [];
+      for (let i = 0; i < flowDates.length; i++) {
+        if (i === 0) {
+          periodStarts.push(flowDates[i]);
+        } else {
+          const prev = parseISODate(flowDates[i - 1]);
+          const curr = parseISODate(flowDates[i]);
+          if (diffDays(prev, curr) > 2) {
+            periodStarts.push(flowDates[i]);
+          }
+        }
+      }
+
+      // Calcular duração média adaptativa com peso maior para os últimos 3 ciclos
+      let avgCycle = state.settings.defaultCycleLength || 28;
+      if (periodStarts.length >= 2) {
+        const lengths = [];
+        for (let i = 1; i < periodStarts.length; i++) {
+          const len = diffDays(parseISODate(periodStarts[i - 1]), parseISODate(periodStarts[i]));
+          if (len >= 18 && len <= 60) lengths.push(len);
+        }
+        if (lengths.length > 0) {
+          const recent = lengths.slice(-3);
+          avgCycle = Math.round(recent.reduce((a, b) => a + b, 0) / recent.length);
+        }
+      }
+
+      const lastStartStr = periodStarts.filter(d => d <= targetDateStr).pop() || periodStarts[0] || targetDateStr;
+      const lastStart = parseISODate(lastStartStr);
+      let cycleDay = diffDays(lastStart, targetDate) + 1;
+      if (cycleDay < 1) cycleDay = 1;
+
+      const isHormonalSuppressed = ['pill', 'ring', 'patch', 'implant', 'hormonal_iud'].includes(state.settings.contraceptive);
+      const lutealLength = 14;
+      const ovulationDay = Math.max(8, avgCycle - lutealLength);
+      const fertileStart = Math.max(6, ovulationDay - 4);
+      const fertileEnd = ovulationDay + 1;
+
+      let phaseKey = 'follicular';
+      let phaseName = 'Fase Folicular';
+      let phaseColor = '#38bdf8';
+      let phaseDesc = 'Estrogênio em elevação gradual; tendência de melhora na disposição e clareza mental.';
+
+      if (isHormonalSuppressed) {
+        if (cycleDay <= 5) {
+          phaseKey = 'menstrual';
+          phaseName = 'Pausa / Sangramento de Privação';
+          phaseColor = '#f43f5e';
+          phaseDesc = 'Sangramento causado pela queda dos hormônios sintéticos do método contraceptivo.';
+        } else {
+          phaseKey = 'follicular';
+          phaseName = 'Fase Estável (Método Hormonal)';
+          phaseColor = '#38bdf8';
+          phaseDesc = 'Hormônios sintéticos mantêm níveis constantes e suprimem o pico ovulatório natural.';
+        }
+      } else {
+        if (cycleDay <= 5) {
+          phaseKey = 'menstrual';
+          phaseName = 'Fase Menstrual';
+          phaseColor = '#f43f5e';
+          phaseDesc = 'Queda de estrogênio e progesterona. Período natural de recolhimento e menor energia física.';
+        } else if (cycleDay < fertileStart) {
+          phaseKey = 'follicular';
+          phaseName = 'Fase Folicular';
+          phaseColor = '#38bdf8';
+          phaseDesc = 'Estrogênio em ascensão. Costuma favorecer o humor, lubrificação e retomada gradual do desejo.';
+        } else if (cycleDay <= fertileEnd) {
+          phaseKey = 'ovulatory';
+          phaseName = 'Fase Ovulatória / Janela Fértil';
+          phaseColor = '#10b981';
+          phaseDesc = 'Pico de estrogênio e testosterona. Frequentemente associada ao ápice da libido e energia.';
+        } else {
+          phaseKey = 'luteal';
+          phaseName = 'Fase Lútea';
+          phaseColor = '#a78bfa';
+          phaseDesc = 'Predomínio de progesterona. Pode haver oscilação de humor, sensibilidade física e variação no desejo.';
+        }
+      }
+
+      const nextPeriodDate = addDays(lastStart, avgCycle);
+      const fertileStartDate = addDays(lastStart, fertileStart - 1);
+      const fertileEndDate = addDays(lastStart, fertileEnd - 1);
+
+      return {
+        cycleDay,
+        avgCycle,
+        phaseKey,
+        phaseName,
+        phaseColor,
+        phaseDesc,
+        isHormonalSuppressed,
+        nextPeriodStr: toISODate(nextPeriodDate),
+        daysUntilNextPeriod: diffDays(targetDate, nextPeriodDate),
+        fertileStartStr: toISODate(fertileStartDate),
+        fertileEndStr: toISODate(fertileEndDate),
+        periodStarts
+      };
+    }
+
+    /* ==========================================================
+       3. RENDERIZAÇÃO DA TELA INICIAL & CHECK-IN (<15s)
+       ========================================================== */
+    function renderTodayView() {
+      const analysis = getCycleAnalysis(activeDate);
+      const isToday = activeDate === toISODate(new Date());
+
+      document.getElementById('checkin-date-label').textContent = isToday
+        ? 'Hoje'
+        : parseISODate(activeDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+
+      document.getElementById('hero-cycle-day').textContent = `Dia ${analysis.cycleDay}`;
+      document.getElementById('hero-cycle-total').textContent = `de ~${analysis.avgCycle} dias`;
+
+      const ring = document.getElementById('cycle-progress-ring');
+      const circumference = 289;
+      const pct = Math.min(1, analysis.cycleDay / analysis.avgCycle);
+      ring.style.strokeDashoffset = circumference - (circumference * pct);
+      ring.style.stroke = analysis.phaseColor;
+
+      const badge = document.getElementById('hero-phase-badge');
+      badge.textContent = state.settings.discreetMode === 'discreet'
+        ? `Etapa ${analysis.cycleDay}`
+        : analysis.phaseName;
+      badge.style.color = analysis.phaseColor;
+      badge.style.background = `${analysis.phaseColor}26`;
+
+      document.getElementById('hero-phase-desc').textContent = state.settings.discreetMode === 'discreet'
+        ? 'Acompanhamento diário de bem-estar e equilíbrio.'
+        : analysis.phaseDesc;
+
+      const preds = document.getElementById('hero-predictions');
+      const nextLabel = analysis.daysUntilNextPeriod >= 0
+        ? `Próx. ciclo em ${analysis.daysUntilNextPeriod}d`
+        : `Ciclo ${Math.abs(analysis.daysUntilNextPeriod)}d além da média`;
+
+      let fertilePill = '';
+      if (!analysis.isHormonalSuppressed) {
+        const fStart = parseISODate(analysis.fertileStartStr).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        const fEnd = parseISODate(analysis.fertileEndStr).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        fertilePill = `<span class="pred-pill">Janela fértil: ${fStart} – ${fEnd}</span>`;
+      } else {
+        fertilePill = `<span class="pred-pill">Ovulação suprimida pelo método</span>`;
+      }
+
+      preds.innerHTML = `<span class="pred-pill">${nextLabel}</span>${fertilePill}`;
+
+      const contraBanner = document.getElementById('contraceptive-banner');
+      if (state.settings.contraceptive !== 'none' || state.settings.reminder) {
+        contraBanner.style.display = 'block';
+        const methodNames = {
+          pill: 'Pílula', hormonal_iud: 'DIU Hormonal', copper_iud: 'DIU Cobre',
+          ring: 'Anel', patch: 'Adesivo', implant: 'Implante', none: ''
+        };
+        const mText = methodNames[state.settings.contraceptive] ? `Método: <strong>${methodNames[state.settings.contraceptive]}</strong>` : '';
+        const rText = state.settings.reminder ? ` • Lembrete: ${state.settings.reminder}` : '';
+        contraBanner.innerHTML = `${mText}${rText}`;
+      } else {
+        contraBanner.style.display = 'none';
+      }
+
+      // Carregar valores existentes para activeDate
+      const entry = state.entries[activeDate] || { libido: 0, flow: 'none', tags: [] };
+
+      document.querySelectorAll('#libido-scale .libido-btn').forEach(btn => {
+        btn.classList.toggle('selected', Number(btn.dataset.val) === entry.libido);
+      });
+
+      document.querySelectorAll('#flow-chips .chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.val === (entry.flow || 'none'));
+      });
+
+      document.querySelectorAll('#sex-chips .chip, #symptom-chips .chip, #factor-chips .chip').forEach(chip => {
+        chip.classList.toggle('active', entry.tags.includes(chip.dataset.tag));
+      });
+
+      document.getElementById('checkin-status-badge').textContent = state.entries[activeDate] ? 'Registrado ✓' : '~15 seg';
+    }
+
+    // Interações dos botões de check-in
+    document.querySelectorAll('#libido-scale .libido-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const current = Number(btn.dataset.val);
+        const already = btn.classList.contains('selected');
+        document.querySelectorAll('#libido-scale .libido-btn').forEach(b => b.classList.remove('selected'));
+        if (!already) btn.classList.add('selected');
+      });
+    });
+
+    document.querySelectorAll('#flow-chips .chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#flow-chips .chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('#sex-chips .chip, #symptom-chips .chip, #factor-chips .chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('active');
+      });
+    });
+
+    function saveDailyEntry() {
+      const selectedLibidoBtn = document.querySelector('#libido-scale .libido-btn.selected');
+      const libido = selectedLibidoBtn ? Number(selectedLibidoBtn.dataset.val) : 0;
+
+      const selectedFlowChip = document.querySelector('#flow-chips .chip.active');
+      const flow = selectedFlowChip ? selectedFlowChip.dataset.val : 'none';
+
+      const tags = Array.from(document.querySelectorAll('#sex-chips .chip.active, #symptom-chips .chip.active, #factor-chips .chip.active'))
+        .map(c => c.dataset.tag);
+
+      state.entries[activeDate] = { libido, flow, tags, updatedAt: Date.now() };
+      persistState();
+      renderTodayView();
+      renderCalendar();
+      showToast('Registro salvo localmente');
+    }
+
+    /* ==========================================================
+       4. CALENDÁRIO INTERATIVO
+       ========================================================== */
+    function changeMonth(delta) {
+      calCursor = new Date(calCursor.getFullYear(), calCursor.getMonth() + delta, 1);
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const year = calCursor.getFullYear();
+      const month = calCursor.getMonth();
+      const monthName = calCursor.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      document.getElementById('cal-month-title').textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+      const firstDayWeekday = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const todayStr = toISODate(new Date());
+      const analysis = getCycleAnalysis(todayStr);
+
+      const container = document.getElementById('cal-days');
+      container.innerHTML = '';
+
+      for (let i = 0; i < firstDayWeekday; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'cal-day empty';
+        container.appendChild(empty);
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateObj = new Date(year, month, d);
+        const dateStr = toISODate(dateObj);
+        const entry = state.entries[dateStr];
+
+        const cell = document.createElement('div');
+        cell.className = 'cal-day';
+        if (dateStr === todayStr) cell.classList.add('today');
+        if (dateStr === selectedCalDate) cell.classList.add('selected');
+
+        if (entry && ['light', 'medium', 'heavy', 'spotting'].includes(entry.flow)) {
+          cell.classList.add('period');
+        } else if (dateStr >= analysis.nextPeriodStr && dateStr <= toISODate(addDays(parseISODate(analysis.nextPeriodStr), 4))) {
+          cell.classList.add('predicted-period');
+        } else if (!analysis.isHormonalSuppressed && dateStr >= analysis.fertileStartStr && dateStr <= analysis.fertileEndStr) {
+          cell.classList.add('fertile');
+        }
+
+        const dotsHtml = [];
+        if (entry?.libido > 0) dotsHtml.push(`<i class="dot" style="background:#38bdf8"></i>`);
+        if (entry?.tags?.length > 0) dotsHtml.push(`<i class="dot" style="background:#a78bfa"></i>`);
+
+        cell.innerHTML = `<span>${d}</span><div class="cal-dots">${dotsHtml.join('')}</div>`;
+        cell.onclick = () => {
+          selectedCalDate = dateStr;
+          renderCalendar();
+          renderSelectedDayDetail(dateStr);
+        };
+        container.appendChild(cell);
+      }
+
+      renderSelectedDayDetail(selectedCalDate);
+    }
+
+    function renderSelectedDayDetail(dateStr) {
+      const dateLabel = parseISODate(dateStr).toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
+      document.getElementById('selected-day-heading').textContent = dateLabel;
+
+      const entry = state.entries[dateStr];
+      const dayAnalysis = getCycleAnalysis(dateStr);
+
+      if (!entry) {
+        document.getElementById('selected-day-summary').innerHTML =
+          `Fase estimada: <strong>${dayAnalysis.phaseName}</strong> (Dia ${dayAnalysis.cycleDay} do ciclo).<br>Nenhum registro salvo nesta data.`;
+        return;
+      }
+
+      const flowLabels = { none: 'Sem fluxo', spotting: 'Escape', light: 'Leve', medium: 'Moderado', heavy: 'Intenso' };
+      const libidoText = entry.libido ? `${entry.libido}/5` : 'Não informado';
+      const tagsText = entry.tags.length ? `${entry.tags.length} marcador(es) registrado(s)` : 'Sem sintomas adicionais';
+
+      document.getElementById('selected-day-summary').innerHTML =
+        `Fase: <strong>${dayAnalysis.phaseName}</strong> • Fluxo: <strong>${flowLabels[entry.flow]}</strong><br>
+         Libido: <strong>${libidoText}</strong> • ${tagsText}`;
+    }
+
+    function editSelectedDayInToday() {
+      activeDate = selectedCalDate;
+      switchView('today', document.querySelector('.nav-item[data-view="today"]'));
+    }
+
+    /* ==========================================================
+       5. INSIGHTS, GRÁFICO SVG & RELATÓRIO PDF
+       ========================================================== */
+    function renderInsightsView() {
+      const sortedDates = Object.keys(state.entries).sort().slice(-14);
+      const chartContainer = document.getElementById('libido-chart-container');
+
+      if (sortedDates.length === 0) {
+        chartContainer.innerHTML = `<p style="font-size:0.84rem; color:var(--text-muted); padding:16px 0;">Faça seu primeiro check-in diário na aba "Hoje" para visualizar o gráfico de correlação entre ciclo e libido.</p>`;
+      } else {
+        const width = Math.max(320, sortedDates.length * 36);
+        const height = 150;
+        const padLeft = 24;
+        const padBottom = 26;
+        const plotH = height - padBottom - 14;
+        const stepX = (width - padLeft - 16) / Math.max(1, sortedDates.length - 1);
+
+        let bars = '';
+        let points = [];
+        let labels = '';
+
+        sortedDates.forEach((d, i) => {
+          const entry = state.entries[d];
+          const analysis = getCycleAnalysis(d);
+          const x = sortedDates.length === 1 ? width / 2 : padLeft + i * stepX;
+
+          // Barra de fundo representando a fase do ciclo
+          bars += `<rect x="${x - 10}" y="12" width="20" height="${plotH}" rx="4" fill="${analysis.phaseColor}" opacity="0.18" />`;
+
+          if (entry.libido > 0) {
+            const y = 12 + plotH - ((entry.libido - 1) / 4) * (plotH - 12);
+            points.push({ x, y, val: entry.libido });
+          }
+
+          const shortDate = d.slice(8, 10) + '/' + d.slice(5, 7);
+          labels += `<text x="${x}" y="${height - 6}" fill="#94a3b8" font-size="9" text-anchor="middle">${shortDate}</text>`;
+        });
+
+        let polyline = '';
+        let dots = '';
+        if (points.length > 0) {
+          const ptsStr = points.map(p => `${p.x},${p.y}`).join(' ');
+          polyline = `<polyline fill="none" stroke="#10b981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" points="${ptsStr}" />`;
+          dots = points.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#10b981" stroke="#0f172a" stroke-width="1.5" />`).join('');
+        }
+
+        chartContainer.innerHTML = `
+          <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+            <line x1="${padLeft}" y1="12" x2="${width - 10}" y2="12" stroke="#334155" stroke-dasharray="3"/>
+            <line x1="${padLeft}" y1="${12 + plotH / 2}" x2="${width - 10}" y2="${12 + plotH / 2}" stroke="#334155" stroke-dasharray="3"/>
+            <line x1="${padLeft}" y1="${12 + plotH}" x2="${width - 10}" y2="${12 + plotH}" stroke="#334155"/>
+            <text x="8" y="16" fill="#94a3b8" font-size="9">5</text>
+            <text x="8" y="${16 + plotH / 2}" fill="#94a3b8" font-size="9">3</text>
+            <text x="8" y="${12 + plotH}" fill="#94a3b8" font-size="9">1</text>
+            ${bars}
+            ${polyline}
+            ${dots}
+            ${labels}
+          </svg>
+        `;
+      }
+
+      // Resumos educativos personalizados
+      const insightsEl = document.getElementById('educational-insights');
+      const allEntries = Object.entries(state.entries);
+      const libidoEntries = allEntries.filter(([, e]) => e.libido > 0);
+      const avgLibido = libidoEntries.length
+        ? (libidoEntries.reduce((acc, [, e]) => acc + e.libido, 0) / libidoEntries.length).toFixed(1)
+        : '—';
+
+      const stressLowLibido = libidoEntries.filter(([, e]) => e.libido <= 2 && e.tags.includes('high_stress')).length;
+      const painCount = allEntries.filter(([, e]) => e.tags.includes('pain')).length;
+
+      const cards = [];
+
+      if (['pill', 'ring', 'patch', 'implant', 'hormonal_iud'].includes(state.settings.contraceptive)) {
+        cards.push(`<p>• <strong>Influência Contraceptiva:</strong> Métodos hormonais reduzem a flutuação natural de estrogênio e testosterona livre, o que pode estabilizar o humor, mas em algumas pessoas diminui a intensidade dos picos de desejo.</p>`);
+      } else {
+        cards.push(`<p>• <strong>Ondas Hormonais Naturais:</strong> O pico de estrogênio próximo à ovulação costuma aumentar a lubrificação e o desejo sexual, enquanto a progesterona na fase lútea tende a favorecer introspecção e menor libido.</p>`);
+      }
+
+      if (stressLowLibido > 0) {
+        cards.push(`<p>• <strong>Padrão Detectado (Estresse × Desejo):</strong> Em ${stressLowLibido} registro(s) com libido baixa, você também marcou <em>estresse alto</em>. O cortisol elevado compete diretamente com os circuitos de resposta sexual.</p>`);
+      }
+
+      if (painCount > 0) {
+        cards.push(`<p>• <strong>Alerta de Conforto Íntimo:</strong> Você registrou dor ou desconforto em ${painCount} ocasião(ões). Considere levar este relatório impresso ou em PDF para avaliação ginecológica ou fisioterapia pélvica.</p>`);
+      }
+
+      insightsEl.innerHTML = cards.join('');
+
+      const analysis = getCycleAnalysis();
+      document.getElementById('stats-summary').innerHTML = `
+        <div style="background:var(--bg-elevated); padding:12px; border-radius:12px;">
+          <div style="font-size:0.74rem; color:var(--text-muted);">Ciclo Médio</div>
+          <div style="font-size:1.25rem; font-weight:800;">${analysis.avgCycle} dias</div>
+        </div>
+        <div style="background:var(--bg-elevated); padding:12px; border-radius:12px;">
+          <div style="font-size:0.74rem; color:var(--text-muted);">Libido Média</div>
+          <div style="font-size:1.25rem; font-weight:800;">${avgLibido} / 5</div>
+        </div>
+        <div style="background:var(--bg-elevated); padding:12px; border-radius:12px;">
+          <div style="font-size:0.74rem; color:var(--text-muted);">Dias Registrados</div>
+          <div style="font-size:1.25rem; font-weight:800;">${allEntries.length}</div>
+        </div>
+        <div style="background:var(--bg-elevated); padding:12px; border-radius:12px;">
+          <div style="font-size:0.74rem; color:var(--text-muted);">Ciclos Mapeados</div>
+          <div style="font-size:1.25rem; font-weight:800;">${analysis.periodStarts.length}</div>
+        </div>
+      `;
+    }
+
+    function exportClinicalPDF() {
+      const today = new Date().toLocaleDateString('pt-BR');
+      document.getElementById('print-meta').textContent =
+        `Gerado localmente em ${today} • Duração média do ciclo: ${getCycleAnalysis().avgCycle} dias • Total de registros: ${Object.keys(state.entries).length}`;
+      window.print();
+    }
+
+    /* ==========================================================
+       6. PRIVACIDADE, PIN, BACKUP CRIPTOGRAFADO & MODO DISCRETO
+       ========================================================== */
+    function renderSettingsView() {
+      document.getElementById('set-goal').value = state.settings.goal;
+      document.getElementById('set-contraceptive').value = state.settings.contraceptive;
+      document.getElementById('set-reminder').value = state.settings.reminder || '';
+      document.getElementById('set-discreet').value = state.settings.discreetMode || 'default';
+
+      const notes = {
+        none: 'Algoritmo operando em modo fisiológico completo (estimando janela fértil e ovulação).',
+        pill: 'Algoritmo adaptado: sangramentos na pausa são classificados como sangramento de privação, sem janela fértil.',
+        hormonal_iud: 'Algoritmo adaptado: supressão ovulatória parcial/total considerada; escapes são comuns.',
+        copper_iud: 'Algoritmo adaptado: ciclo hormonal natural mantido, com possível aumento de fluxo menstrual.',
+        ring: 'Algoritmo adaptado: níveis hormonais contínuos por 21 dias e sangramento de privação na pausa.',
+        patch: 'Algoritmo adaptado: liberação transdérmica contínua sem pico ovulatório natural.',
+        implant: 'Algoritmo adaptado: progestagênio contínuo; ovulação suprimida e padrão de sangramento irregular.'
+      };
+      document.getElementById('contraceptive-info-box').textContent = notes[state.settings.contraceptive] || '';
+      applyDiscreetMode();
+    }
+
+    function updateSettings() {
+      state.settings.goal = document.getElementById('set-goal').value;
+      state.settings.contraceptive = document.getElementById('set-contraceptive').value;
+      state.settings.reminder = document.getElementById('set-reminder').value.trim();
+      state.settings.discreetMode = document.getElementById('set-discreet').value;
+      persistState();
+      renderSettingsView();
+      renderTodayView();
+      showToast('Preferências atualizadas');
+    }
+
+    function applyDiscreetMode() {
+      const isDiscreet = state.settings.discreetMode === 'discreet';
+      document.getElementById('app-display-name').textContent = isDiscreet ? 'Notas' : 'Maré';
+      document.getElementById('app-subtitle').textContent = isDiscreet ? 'Bem-estar diário' : 'Ondas hormonais & libido';
+      document.title = isDiscreet ? 'Notas Diárias' : 'Maré — Ciclo, Libido & Bem-Estar Íntimo';
+      document.getElementById('quick-lock-btn').style.display = state.settings.pinHash ? 'inline-flex' : 'none';
+    }
+
+    async function sha256(text) {
+      const data = new TextEncoder().encode(text);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function savePin() {
+      const val = document.getElementById('set-pin').value.trim();
+      if (!/^\d{4}$/.test(val)) {
+        showToast('Digite exatamente 4 números');
+        return;
+      }
+      state.settings.pinHash = await sha256(val);
+      persistState();
+      document.getElementById('set-pin').value = '';
+      applyDiscreetMode();
+      showToast('Bloqueio por PIN ativado');
+    }
+
+    function removePin() {
+      state.settings.pinHash = null;
+      persistState();
+      applyDiscreetMode();
+      showToast('Bloqueio por PIN removido');
+    }
+
+    function lockAppNow() {
+      if (!state.settings.pinHash) return;
+      pinBuffer = '';
+      updatePinDots();
+      document.getElementById('lock-error').textContent = '';
+      document.getElementById('lock-screen').classList.add('active');
+    }
+
+    function initKeypad() {
+      const keypad = document.getElementById('keypad');
+      const keys = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
+      keypad.innerHTML = '';
+      keys.forEach(k => {
+        const btn = document.createElement('button');
+        btn.className = 'key-btn';
+        btn.textContent = k;
+        if (!k) {
+          btn.style.visibility = 'hidden';
+        } else if (k === '⌫') {
+          btn.onclick = () => {
+            pinBuffer = pinBuffer.slice(0, -1);
+            updatePinDots();
+          };
+        } else {
+          btn.onclick = async () => {
+            if (pinBuffer.length >= 4) return;
+            pinBuffer += k;
+            updatePinDots();
+            if (pinBuffer.length === 4) {
+              const hashed = await sha256(pinBuffer);
+              if (hashed === state.settings.pinHash) {
+                document.getElementById('lock-screen').classList.remove('active');
+                pinBuffer = '';
+                updatePinDots();
+              } else {
+                document.getElementById('lock-error').textContent = 'PIN incorreto. Tente novamente.';
+                pinBuffer = '';
+                setTimeout(updatePinDots, 300);
+              }
+            }
+          };
+        }
+        keypad.appendChild(btn);
+      });
+    }
+
+    function updatePinDots() {
+      document.querySelectorAll('#pin-dots .pin-dot').forEach((dot, idx) => {
+        dot.classList.toggle('filled', idx < pinBuffer.length);
+      });
+    }
+
+    // Criptografia AES-GCM Ponta a Ponta para Backup Portátil
+    async function deriveKey(passphrase, salt) {
+      const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(passphrase),
+        'PBKDF2',
+        false,
+        ['deriveKey']
+      );
+      return crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+    }
+
+    async function exportEncryptedBackup() {
+      const pass = document.getElementById('backup-passphrase').value;
+      if (!pass || pass.length < 4) {
+        showToast('Defina uma senha para proteger o backup');
+        return;
+      }
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveKey(pass, salt);
+      const encoded = new TextEncoder().encode(JSON.stringify(state));
+      const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
+
+      const payload = {
+        app: 'mare-e2ee-backup',
+        version: 1,
+        salt: Array.from(salt),
+        iv: Array.from(iv),
+        data: Array.from(new Uint8Array(ciphertext))
+      };
+
+      const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `mare-backup-${toISODate(new Date())}.mare`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Backup criptografado baixado');
+    }
+
+    async function importEncryptedBackup(event) {
+      const file = event.target.files[0];
+      const pass = document.getElementById('backup-passphrase').value;
+      if (!file || !pass) {
+        showToast('Informe a senha do backup antes de selecionar o arquivo');
+        return;
+      }
+      try {
+        const text = await file.text();
+        const payload = JSON.parse(text);
+        const salt = new Uint8Array(payload.salt);
+        const iv = new Uint8Array(payload.iv);
+        const data = new Uint8Array(payload.data);
+        const key = await deriveKey(pass, salt);
+        const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+        state = JSON.parse(new TextDecoder().decode(decrypted));
+        persistState();
+        renderAll();
+        showToast('Backup restaurado com sucesso');
+      } catch (e) {
+        showToast('Falha ao descriptografar: senha ou arquivo inválido');
+      }
+    }
+
+    function wipeAllData() {
+      if (confirm('Tem certeza? Isso apagará permanentemente todos os seus registros deste aparelho.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        state = structuredClone(defaultState);
+        location.reload();
+      }
+    }
+
+    /* ==========================================================
+       7. ONBOARDING, NAVEGAÇÃO & PWA SERVICE WORKER
+       ========================================================== */
+    function finishOnboarding() {
+      const lastPeriod = document.getElementById('ob-last-period').value || toISODate(new Date());
+      const cycleLen = Number(document.getElementById('ob-cycle-len').value) || 28;
+      const goal = document.getElementById('ob-goal').value;
+      const contraceptive = document.getElementById('ob-contraceptive').value;
+
+      state.onboarded = true;
+      state.settings.defaultCycleLength = cycleLen;
+      state.settings.goal = goal;
+      state.settings.contraceptive = contraceptive;
+
+      // Registrar primeiro dia do ciclo informado
+      if (!state.entries[lastPeriod]) {
+        state.entries[lastPeriod] = { libido: 0, flow: 'medium', tags: [] };
+      }
+
+      persistState();
+      document.getElementById('onboarding-screen').classList.remove('active');
+      renderAll();
+      showToast('Maré configurada localmente');
+    }
+
+    function switchView(viewName, navBtn) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(`view-${viewName}`).classList.add('active');
+
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      if (navBtn) navBtn.classList.add('active');
+
+      if (viewName === 'today') renderTodayView();
+      if (viewName === 'calendar') renderCalendar();
+      if (viewName === 'insights') renderInsightsView();
+      if (viewName === 'settings') renderSettingsView();
+    }
+
+    function renderAll() {
+      applyDiscreetMode();
+      renderTodayView();
+      renderCalendar();
+      renderInsightsView();
+      renderSettingsView();
+    }
+
+    // Interceptar evento de instalação nativa do PWA
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const installBtn = document.getElementById('install-btn');
+      installBtn.style.display = 'inline-flex';
+      installBtn.onclick = async () => {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installBtn.style.display = 'none';
+        }
+        deferredInstallPrompt = null;
+      };
+    });
+
+    // Registrar Service Worker com caminho relativo
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    // Inicialização
+    (function init() {
+      initKeypad();
+      document.getElementById('ob-last-period').value = toISODate(new Date());
+
+      if (state.settings.pinHash) {
+        lockAppNow();
+      }
+
+      if (!state.onboarded) {
+        document.getElementById('onboarding-screen').classList.add('active');
+      }
+
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
