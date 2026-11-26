@@ -30,6 +30,7 @@
       --ovulatory: #e07a5f;
       --luteal: #c084fc;
       --warning: #f59e0b;
+      --success: #34d399;
       --radius: 16px;
       --safe-bottom: env(safe-area-inset-bottom, 16px);
     }
@@ -49,6 +50,14 @@
       min-height: 100dvh;
       overflow-x: hidden;
       padding-bottom: calc(84px + var(--safe-bottom));
+    }
+
+    body.partner-mode {
+      padding-bottom: 32px;
+    }
+
+    body.partner-mode .bottom-nav {
+      display: none !important;
     }
 
     button, input, select, textarea, .chip, .cal-day {
@@ -175,6 +184,11 @@
       background: var(--accent-soft);
       color: var(--accent);
       white-space: nowrap;
+    }
+
+    .badge.live {
+      background: rgba(52, 211, 153, 0.16);
+      color: var(--success);
     }
 
     .wave-hero {
@@ -341,7 +355,7 @@
       margin-bottom: 6px;
     }
 
-    select, input[type="text"], input[type="password"], input[type="date"], input[type="number"], textarea {
+    select, input[type="text"], input[type="url"], input[type="password"], input[type="date"], input[type="number"], textarea {
       width: 100%;
       background: var(--bg-elevated);
       border: 1px solid var(--border);
@@ -448,7 +462,34 @@
       font-size: 0.82rem;
     }
 
-    /* CALENDÁRIO & LAYOUT DAS FASES */
+    .pair-code-box {
+      background: var(--bg);
+      border: 1px dashed rgba(224, 122, 95, 0.55);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.84rem;
+      color: var(--accent);
+      word-break: break-all;
+      margin: 8px 0;
+    }
+
+    .forecast-strip {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .forecast-cell {
+      border-radius: 9px;
+      padding: 6px 2px;
+      text-align: center;
+      font-size: 0.7rem;
+      background: var(--bg-elevated);
+      border: 1px solid transparent;
+    }
+
     .cal-nav {
       display: flex;
       justify-content: space-between;
@@ -497,7 +538,6 @@
       pointer-events: none;
     }
 
-    /* Fases fisiológicas no calendário */
     .cal-day.phase-menstrual {
       background: rgba(225, 29, 72, 0.3);
       color: #ffe4e6;
@@ -779,51 +819,74 @@
   <!-- ONBOARDING OVERLAY -->
   <div id="onboarding-screen" class="overlay" style="justify-content:flex-start; overflow-y:auto;">
     <div style="margin-top:16px;">
-      <span class="badge">100% Privado • Armazenamento Local</span>
+      <span class="badge">100% Privado • Criptografia Local</span>
       <h2 style="font-size:1.5rem; margin:10px 0 6px;">Boas-vindas à Maré</h2>
       <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:18px;">
-        Mapeie suas ondas hormonais, desejo e bem-estar íntimo sem criar conta e sem enviar dados para servidores externos.
+        Mapeie suas ondas hormonais, desejo e bem-estar íntimo sem criar conta. Seus registros ficam no seu aparelho; o Modo Duo opcional usa criptografia ponta a ponta.
       </p>
 
       <div class="field-group">
-        <label class="field-label">Qual é o seu objetivo principal agora?</label>
-        <select id="ob-goal">
-          <option value="know_body">Conhecer meu corpo e padrões hormonais</option>
-          <option value="libido">Acompanhar libido e bem-estar íntimo</option>
-          <option value="avoid_pregnancy">Evitar gravidez (percepção de fertilidade)</option>
-          <option value="conceive">Tentar engravidar (janela fértil)</option>
+        <label class="field-label">Como você vai usar o Maré neste aparelho?</label>
+        <select id="ob-role">
+          <option value="primary">Sou a usuária principal (acompanhar meu ciclo)</option>
+          <option value="partner">Sou parceiro(a) (recebi um código/link Duo)</option>
         </select>
       </div>
 
-      <div class="field-group">
-        <label class="field-label">Data de início da última menstruação (ou sangramento)</label>
-        <input type="date" id="ob-last-period" />
+      <div id="ob-primary-fields">
+        <div class="field-group">
+          <label class="field-label">Qual é o seu objetivo principal agora?</label>
+          <select id="ob-goal">
+            <option value="know_body">Conhecer meu corpo e padrões hormonais</option>
+            <option value="libido">Acompanhar libido e bem-estar íntimo</option>
+            <option value="avoid_pregnancy">Evitar gravidez (percepção de fertilidade)</option>
+            <option value="conceive">Tentar engravidar (janela fértil)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Data de início da última menstruação (ou sangramento)</label>
+          <input type="date" id="ob-last-period" />
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;" class="field-group">
+          <div>
+            <label class="field-label">Ciclo médio (dias)</label>
+            <input type="number" id="ob-cycle-len" value="28" min="18" max="60" />
+          </div>
+          <div>
+            <label class="field-label">Menstruação (dias)</label>
+            <input type="number" id="ob-period-len" value="5" min="2" max="10" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Método contraceptivo atual</label>
+          <select id="ob-contraceptive">
+            <option value="none">Nenhum / Métodos de barreira (camisinha)</option>
+            <option value="pill">Pílula anticoncepcional</option>
+            <option value="hormonal_iud">DIU Hormonal</option>
+            <option value="copper_iud">DIU de Cobre / Prata</option>
+            <option value="ring">Anel vaginal</option>
+            <option value="patch">Adesivo transdérmico</option>
+            <option value="implant">Implante subdérmico</option>
+          </select>
+        </div>
+
+        <button type="button" class="btn-primary" data-action="finish-onboarding">Começar a mapear minha Maré</button>
       </div>
 
-      <div class="field-group">
-        <label class="field-label">Duração média do ciclo (dias)</label>
-        <input type="number" id="ob-cycle-len" value="28" min="18" max="60" />
+      <div id="ob-partner-fields" style="display:none;">
+        <div class="field-group">
+          <label class="field-label">Código de Pareamento Duo (ex: MARE-XXXX-YYYYYYYYYYYY)</label>
+          <input type="text" id="ob-pair-code" placeholder="Cole o código recebido" />
+        </div>
+        <div class="field-group" style="display:none;">
+          <label class="field-label">URL do Firebase Realtime Database</label>
+          <input type="url" id="ob-fb-url" value="https://mare-duo-default-rtdb.firebaseio.com" />
+        </div>
+        <button type="button" class="btn-primary" data-action="connect-partner-onboarding">Conectar ao Maré Duo</button>
       </div>
-
-      <div class="field-group">
-        <label class="field-label">Duração média da menstruação (dias)</label>
-        <input type="number" id="ob-period-len" value="5" min="2" max="10" />
-      </div>
-
-      <div class="field-group">
-        <label class="field-label">Método contraceptivo atual</label>
-        <select id="ob-contraceptive">
-          <option value="none">Nenhum / Métodos de barreira (camisinha)</option>
-          <option value="pill">Pílula anticoncepcional</option>
-          <option value="hormonal_iud">DIU Hormonal</option>
-          <option value="copper_iud">DIU de Cobre / Prata</option>
-          <option value="ring">Anel vaginal</option>
-          <option value="patch">Adesivo transdérmico</option>
-          <option value="implant">Implante subdérmico</option>
-        </select>
-      </div>
-
-      <button type="button" class="btn-primary" data-action="finish-onboarding">Começar a mapear minha Maré</button>
     </div>
   </div>
 
@@ -953,26 +1016,71 @@
       </div>
     </section>
 
-    <!-- VIEW 2: MODO DUO LOCAL / PRESENCIAL -->
+    <!-- VIEW 2: MODO DUO (SINCRONIZAÇÃO E2EE ENTRE DOIS CELULARES) -->
     <section id="view-duo" class="view">
-      <div class="card" style="padding:12px 16px;">
-        <div class="card-header" style="margin-bottom:0;">
+      <!-- PAINEL DE CONEXÃO FIREBASE E2EE -->
+      <div class="card">
+        <div class="card-header">
           <div>
-            <span class="card-title">Maré Duo • Visão Local do Casal</span>
-            <div style="font-size:0.74rem; color:var(--text-muted);" id="duo-status-caption">Compartilhamento ativo neste aparelho</div>
+            <span class="card-title">Maré Duo • Sincronização E2EE</span>
+            <div style="font-size:0.74rem; color:var(--text-muted);" id="duo-sync-status">Gere um código ou link para parear 2 celulares</div>
           </div>
-          <button type="button" id="duo-pause-btn" class="btn-pill warn" data-action="toggle-duo-pause">Pausar</button>
+          <span class="badge" id="duo-sync-badge">Local</span>
+        </div>
+
+        <!-- MODO USUÁRIA PRINCIPAL -->
+        <div id="duo-primary-sync-box">
+          <div id="duo-unpaired-actions">
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">
+              Crie uma sala criptografada ponta a ponta para que seu parceiro ou parceira acompanhe seu clima do dia, sinais e previsão no próprio celular.
+            </p>
+            <button type="button" class="btn-primary" data-action="generate-pair-room">Gerar Código & Link de Pareamento</button>
+          </div>
+
+          <div id="duo-paired-actions" style="display:none; margin-top:4px;">
+            <label class="field-label">Código de Pareamento (Envie para seu parceiro ou parceira)</label>
+            <div class="pair-code-box" id="duo-pair-code-display">MARE-XXXX-YYYYYYYYYYYY</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+              <button type="button" class="btn-secondary" data-action="copy-pair-link">Copiar Link de Convite</button>
+              <button type="button" class="btn-secondary" data-action="sync-now">Sincronizar Agora</button>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:8px;">
+              <button type="button" id="duo-pause-btn" class="btn-pill warn" data-action="toggle-duo-pause">Pausar envio</button>
+              <button type="button" class="btn-pill" style="color:var(--menstrual); border-color:rgba(225,29,72,0.45);" data-action="revoke-pair-room">Revogar & Apagar da Nuvem</button>
+            </div>
+          </div>
+
+          <details style="margin-top:12px; font-size:0.75rem; color:var(--text-muted);">
+            <summary style="cursor:pointer;">Configuração avançada do servidor Firebase</summary>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <input type="url" id="duo-fb-url" value="https://mare-duo-default-rtdb.firebaseio.com" />
+              <button type="button" class="btn-secondary" data-action="save-fb-url">Salvar</button>
+            </div>
+          </details>
+        </div>
+
+        <!-- MODO PARCEIRO(A) CONECTADO -->
+        <div id="duo-partner-sync-box" style="display:none;">
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">
+            Conectado como <strong>Parceiro(a)</strong> (leitura criptografada ponta a ponta). Nenhum dado íntimo sensível é exibido aqui.
+          </p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <button type="button" class="btn-secondary" data-action="sync-now">Atualizar Agora</button>
+            <button type="button" class="btn-secondary" style="color:var(--menstrual);" data-action="disconnect-partner">Desconectar</button>
+          </div>
         </div>
       </div>
 
+      <!-- AVISO DE PAUSA -->
       <div id="duo-paused-card" class="card" style="display:none; border-color:rgba(245,158,11,0.5);">
         <h3 style="font-size:0.98rem; margin-bottom:6px;">Compartilhamento Duo Pausado</h3>
         <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:12px;">
-          O painel do parceiro/parceira está oculto no momento. Você pode reativar quando quiser, sem precisar justificar.
+          O envio para o aparelho do parceiro/parceira está pausado no momento. Você pode reativar quando quiser, sem precisar justificar.
         </p>
-        <button type="button" class="btn-primary" data-action="toggle-duo-pause">Reativar visão Duo</button>
+        <button type="button" class="btn-primary primary-only" data-action="toggle-duo-pause">Reativar compartilhamento Duo</button>
       </div>
 
+      <!-- CONTEÚDO COMPARTILHADO (VISÍVEL PARA AMBOS) -->
       <div id="duo-active-content">
         <div class="climate-banner">
           <span class="badge" id="duo-climate-badge">Clima do Dia</span>
@@ -981,12 +1089,13 @@
           <div id="duo-shared-details" style="margin-top:10px; font-size:0.82rem; color:var(--text);"></div>
         </div>
 
+        <!-- SINAIS SILENCIOSOS -->
         <div class="card">
           <div class="card-header">
             <span class="card-title">Sinais Silenciosos (Sem Pressão)</span>
             <span class="badge">24h</span>
           </div>
-          <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:6px;">
+          <p id="silent-signals-caption" style="font-size:0.78rem; color:var(--text-muted); margin-bottom:6px;">
             Sinalize seu tom de proximidade hoje com leveza, sem cobrança de resposta imediata:
           </p>
           <div class="signal-grid" id="silent-signals">
@@ -1014,6 +1123,15 @@
           </div>
         </div>
 
+        <!-- PREVISÃO DOS PRÓXIMOS 14 DIAS -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Próximos 14 Dias • Previsão das Ondas</span>
+          </div>
+          <div class="forecast-strip" id="duo-forecast-strip"></div>
+        </div>
+
+        <!-- GUIA PRÁTICO DE EMPATIA -->
         <div class="card">
           <div class="card-header">
             <span class="card-title">Guia Prático de Empatia</span>
@@ -1021,26 +1139,30 @@
           <p id="duo-empathy-tip" style="font-size:0.85rem; color:var(--text-muted);"></p>
         </div>
 
+        <!-- MENU DE CUIDADOS -->
         <div class="card">
           <div class="card-header">
             <span class="card-title">O Que Ajuda Quando Tô Assim</span>
           </div>
           <div class="chip-group" id="care-menu-chips"></div>
-          <div style="display:flex; gap:8px; margin-top:12px;">
+          <div class="primary-only" style="display:flex; gap:8px; margin-top:12px;">
             <input type="text" id="new-care-item" placeholder="Adicionar cuidado (ex: massagem nos pés)" />
             <button type="button" class="btn-secondary" data-action="add-care-item">+</button>
           </div>
         </div>
 
+        <!-- PLANEJAMENTO & CUIDADO MÚTUO -->
         <div class="card">
           <div class="card-header">
             <span class="card-title">Planejamento & Cuidado Mútuo</span>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
-            <input type="date" id="duo-plan-date" />
-            <input type="text" id="duo-plan-title" placeholder="Ex: Viagem, jantar, folga" />
+          <div class="primary-only">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+              <input type="date" id="duo-plan-date" />
+              <input type="text" id="duo-plan-title" placeholder="Ex: Viagem, jantar, folga" />
+            </div>
+            <button type="button" class="btn-secondary" style="width:100%;" data-action="add-duo-plan">Adicionar plano ao calendário do casal</button>
           </div>
-          <button type="button" class="btn-secondary" style="width:100%;" data-action="add-duo-plan">Adicionar plano ao calendário do casal</button>
           <div id="duo-plans-list"></div>
 
           <div style="border-top:1px solid var(--border); margin-top:14px; padding-top:12px;">
@@ -1054,7 +1176,8 @@
           </div>
         </div>
 
-        <div class="card">
+        <!-- PERMISSÕES GRANULARES -->
+        <div class="card primary-only">
           <div class="card-header">
             <span class="card-title">Permissões da Visão Duo</span>
             <span class="badge">Consentimento</span>
@@ -1072,7 +1195,7 @@
             <input type="checkbox" id="perm-symptoms" />
           </div>
           <p style="font-size:0.73rem; color:var(--text-muted); margin-top:8px;">
-            Masturbação, dor íntima detalhada e anotações pessoais nunca são exibidos na visão Duo.
+            Masturbação, dor íntima detalhada e anotações pessoais nunca saem do seu aparelho.
           </p>
         </div>
       </div>
@@ -1274,10 +1397,12 @@
 
   <script>
     const STORAGE_KEY = 'mare_pwa_state_v1';
+    const DEFAULT_FIREBASE_URL = 'https://mare-duo-default-rtdb.firebaseio.com';
 
     function cloneDefaultState() {
       return JSON.parse(JSON.stringify({
         onboarded: false,
+        role: 'primary',
         settings: {
           goal: 'know_body',
           contraceptive: 'none',
@@ -1288,6 +1413,10 @@
           defaultPeriodLength: 5
         },
         duo: {
+          firebaseUrl: DEFAULT_FIREBASE_URL,
+          roomId: null,
+          roomSecret: null,
+          lastSyncedAt: null,
           paused: false,
           permissions: { phase: true, libido: true, symptoms: true },
           signal: null,
@@ -1297,6 +1426,7 @@
           mutualCare: [],
           plans: []
         },
+        partnerSnapshot: null,
         entries: {}
       }));
     }
@@ -1325,10 +1455,12 @@
         return {
           ...base,
           ...parsed,
+          role: parsed && parsed.role === 'partner' ? 'partner' : 'primary',
           settings: { ...base.settings, ...(parsed && parsed.settings ? parsed.settings : {}) },
           duo: {
             ...base.duo,
             ...(parsed && parsed.duo ? parsed.duo : {}),
+            firebaseUrl: (parsed && parsed.duo && parsed.duo.firebaseUrl) || DEFAULT_FIREBASE_URL,
             permissions: { ...base.duo.permissions, ...(parsed && parsed.duo && parsed.duo.permissions ? parsed.duo.permissions : {}) }
           },
           entries: parsed && typeof parsed.entries === 'object' && parsed.entries !== null ? parsed.entries : {}
@@ -1344,6 +1476,7 @@
     let selectedCalDate = activeDate;
     let deferredInstallPrompt = null;
     let pinBuffer = '';
+    let partnerPollTimer = null;
 
     function persistState() {
       try {
@@ -1379,17 +1512,9 @@
       if (!el) return;
       el.textContent = msg;
       el.classList.add('show');
-      setTimeout(() => el.classList.remove('show'), 2200);
+      setTimeout(() => el.classList.remove('show'), 2300);
     }
 
-    /* =========================================================================
-       MOTOR FISIOLÓGICO DO CICLO (ACOG / FIGO) + PROJEÇÃO MULTICICLOS
-       - Fase Lútea fisiológica: ~14 dias antes da próxima menstruação
-       - Ovulação estimada: avgCycle - 14 (Dia 14 em um ciclo de 28 dias)
-       - Janela Fértil (sobrevida espermática de 5d + óvulo 24h): Ovulação - 5 até Ovulação
-       - Fase Menstrual: duração real registrada ou média dos sangramentos (padrão 5d)
-       - Fase Folicular: término da menstruação até início da janela fértil
-       ========================================================================= */
     function getCycleMetrics() {
       const flowDates = Object.keys(state.entries || {})
         .filter(d => state.entries[d] && ['light', 'medium', 'heavy'].includes(state.entries[d].flow))
@@ -1409,7 +1534,6 @@
 
       const periodStarts = cycles.map(b => b[0]);
 
-      // Média aparada da duração dos ciclos registrados
       let avgCycle = Number(state.settings.defaultCycleLength) || 28;
       if (periodStarts.length >= 2) {
         const lengths = [];
@@ -1423,7 +1547,6 @@
         }
       }
 
-      // Média da duração do sangramento menstrual
       let avgPeriodLen = Number(state.settings.defaultPeriodLength) || 5;
       if (cycles.length > 0) {
         const periodLengths = cycles
@@ -1443,7 +1566,6 @@
       const { periodStarts, avgCycle, avgPeriodLen } = cachedMetrics || getCycleMetrics();
       const isHormonalSuppressed = ['pill', 'ring', 'patch', 'implant', 'hormonal_iud'].includes(state.settings.contraceptive);
 
-      // Encontra o início de ciclo real anterior ou igual à data alvo
       const pastOrCurrentStarts = periodStarts.filter(d => d <= targetDateStr);
       const anchorStr = pastOrCurrentStarts.length > 0
         ? pastOrCurrentStarts[pastOrCurrentStarts.length - 1]
@@ -1451,7 +1573,6 @@
       const anchorDate = parseISODate(anchorStr);
       const totalDaysFromAnchor = diffDays(anchorDate, targetDate);
 
-      // Projeta ciclos futuros (ou passados antes do 1º registro) em blocos de avgCycle
       let cycleOffsetIndex = 0;
       let cycleStartDate = anchorDate;
       let cycleDay = 1;
@@ -1471,7 +1592,6 @@
       const hasLoggedPeriod = !!(entry && ['light', 'medium', 'heavy'].includes(entry.flow));
       const hasLoggedSpotting = !!(entry && entry.flow === 'spotting');
 
-      // Marcos fisiológicos do ciclo corrente/projetado
       const lutealLength = 14;
       const ovulationDay = Math.max(avgPeriodLen + 2, avgCycle - lutealLength);
       const fertileStartDay = Math.max(avgPeriodLen + 1, ovulationDay - 5);
@@ -1484,7 +1604,7 @@
       let isOvulationDay = false;
 
       if (isHormonalSuppressed) {
-        if (hasLoggedPeriod || (!isPredictedCycle && cycleDay <= avgPeriodLen) || (isPredictedCycle && cycleDay <= avgPeriodLen)) {
+        if (hasLoggedPeriod || cycleDay <= avgPeriodLen) {
           phaseKey = 'menstrual';
           phaseName = 'Pausa / Sangramento de Privação';
           phaseColor = '#e11d48';
@@ -1495,7 +1615,7 @@
           phaseColor = '#f4a261';
           phaseDesc = 'Hormônios sintéticos mantêm níveis constantes e suprimem o pico ovulatório natural.';
         }
-      } else if (hasLoggedPeriod || (!isPredictedCycle && cycleDay <= avgPeriodLen) || (isPredictedCycle && cycleDay <= avgPeriodLen)) {
+      } else if (hasLoggedPeriod || cycleDay <= avgPeriodLen) {
         phaseKey = 'menstrual';
         phaseName = isPredictedCycle && !hasLoggedPeriod ? 'Menstruação Prevista' : 'Fase Menstrual';
         phaseColor = '#e11d48';
@@ -1525,7 +1645,6 @@
       const fertileEndStr = toISODate(addDays(cycleStartDate, fertileEndDay - 1));
       const ovulationStr = toISODate(addDays(cycleStartDate, ovulationDay - 1));
 
-      // Próxima transição de fase a partir do dia alvo
       let nextPhaseLabel = '';
       if (!isHormonalSuppressed) {
         if (cycleDay <= avgPeriodLen) {
@@ -1564,7 +1683,255 @@
       };
     }
 
+    function normalizeFirebaseUrl(rawUrl) {
+      return (rawUrl || '').trim().replace(/\/+$/, '');
+    }
+
+    function randomToken(len) {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      const bytes = new Uint8Array(len);
+      if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
+      else for (let i = 0; i < len; i++) bytes[i] = Math.floor(Math.random() * 256);
+      return Array.from(bytes).map(b => chars[b % chars.length]).join('');
+    }
+
+    function parsePairCode(codeStr) {
+      const clean = (codeStr || '').trim().toUpperCase();
+      const match = clean.match(/^MARE-([A-Z0-9]{4,8})-([A-Z0-9]{8,24})$/);
+      if (!match) return null;
+      return { roomId: match[1], secret: match[2], fullCode: clean };
+    }
+
+    async function deriveDuoCryptoKey(secret, roomId) {
+      const enc = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(secret), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: enc.encode('mare_duo_salt_' + roomId), iterations: 60000, hash: 'SHA-256' },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+    }
+
+    async function encryptDuoPayload(obj, secret, roomId) {
+      if (!window.crypto || !crypto.subtle) {
+        throw new Error('Criptografia WebCrypto requer HTTPS.');
+      }
+      const key = await deriveDuoCryptoKey(secret, roomId);
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const encoded = new TextEncoder().encode(JSON.stringify(obj));
+      const cipherBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
+      return {
+        iv: btoa(String.fromCharCode(...iv)),
+        ciphertext: btoa(String.fromCharCode(...new Uint8Array(cipherBuf))),
+        updatedAt: Date.now()
+      };
+    }
+
+    async function decryptDuoPayload(record, secret, roomId) {
+      if (!record || !record.iv || !record.ciphertext) return null;
+      const key = await deriveDuoCryptoKey(secret, roomId);
+      const iv = Uint8Array.from(atob(record.iv), c => c.charCodeAt(0));
+      const data = Uint8Array.from(atob(record.ciphertext), c => c.charCodeAt(0));
+      const plainBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+      return JSON.parse(new TextDecoder().decode(plainBuf));
+    }
+
+    function buildDuoSnapshot() {
+      const todayStr = toISODate(new Date());
+      const metrics = getCycleMetrics();
+      const analysis = getCycleAnalysis(todayStr, metrics);
+      const todayEntry = state.entries[todayStr] || { libido: 0, flow: 'none', tags: [] };
+      const todayTags = Array.isArray(todayEntry.tags) ? todayEntry.tags : [];
+      const perms = state.duo.permissions;
+
+      if (state.duo.paused) {
+        return { paused: true, generatedDate: todayStr, updatedAt: Date.now() };
+      }
+
+      const allowedSymptomMap = {
+        cramps: 'Cólicas',
+        breast_tenderness: 'Seios sensíveis',
+        bloating: 'Inchaço',
+        headache: 'Dor de cabeça',
+        high_energy: 'Alta energia',
+        fatigue: 'Fadiga',
+        anxiety: 'Ansiedade',
+        irritability: 'Irritabilidade',
+        good_mood: 'Disposição'
+      };
+
+      const visibleSymptoms = perms.symptoms
+        ? todayTags.filter(t => allowedSymptomMap[t]).map(t => allowedSymptomMap[t])
+        : [];
+
+      const forecast14 = [];
+      const baseDate = parseISODate(todayStr);
+      for (let i = 0; i < 14; i++) {
+        const d = addDays(baseDate, i);
+        const dStr = toISODate(d);
+        const a = getCycleAnalysis(dStr, metrics);
+        forecast14.push({
+          date: dStr,
+          dayNum: d.getDate(),
+          phaseKey: perms.phase ? a.phaseKey : 'neutral',
+          phaseName: perms.phase ? a.phaseName : 'Reservado',
+          phaseColor: perms.phase ? a.phaseColor : '#b8a6b9',
+          isOvulationDay: perms.phase ? a.isOvulationDay : false
+        });
+      }
+
+      return {
+        paused: false,
+        generatedDate: todayStr,
+        updatedAt: Date.now(),
+        permissions: { ...perms },
+        cycle: perms.phase ? {
+          cycleDay: analysis.cycleDay,
+          avgCycle: analysis.avgCycle,
+          phaseKey: analysis.phaseKey,
+          phaseName: analysis.phaseName,
+          phaseColor: analysis.phaseColor,
+          nextPhaseLabel: analysis.nextPhaseLabel
+        } : null,
+        libido: (perms.libido && todayEntry.libido > 0) ? todayEntry.libido : null,
+        symptoms: visibleSymptoms,
+        signal: state.duo.signalDate === todayStr ? state.duo.signal : null,
+        signalDate: state.duo.signalDate,
+        activeCareItems: [...state.duo.activeCareItems],
+        mutualCare: [...state.duo.mutualCare],
+        plans: state.duo.plans.map(p => ({
+          id: p.id,
+          date: p.date,
+          title: p.title,
+          phaseName: perms.phase ? getCycleAnalysis(p.date, metrics).phaseName : ''
+        })),
+        forecast14
+      };
+    }
+
+    async function pushDuoToFirebase(silent = false) {
+      if (state.role !== 'primary') return;
+      const fbUrl = normalizeFirebaseUrl(state.duo.firebaseUrl || DEFAULT_FIREBASE_URL);
+      if (!fbUrl || !state.duo.roomId || !state.duo.roomSecret) return;
+
+      const badge = document.getElementById('duo-sync-badge');
+      if (badge) badge.textContent = 'Enviando...';
+
+      try {
+        const snapshot = buildDuoSnapshot();
+        const encrypted = await encryptDuoPayload(snapshot, state.duo.roomSecret, state.duo.roomId);
+        const res = await fetch(`${fbUrl}/duo_rooms/${state.duo.roomId}.json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(encrypted)
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        state.duo.lastSyncedAt = Date.now();
+        persistState();
+        updateDuoSyncStatusUI();
+        if (!silent) showToast('Sincronizado com o Firebase (E2EE)');
+      } catch (err) {
+        if (badge) badge.textContent = 'Erro sync';
+        if (!silent) showToast('Erro ao sincronizar: verifique as regras do Firebase');
+      }
+    }
+
+    async function pullDuoFromFirebase(silent = false) {
+      if (state.role !== 'partner') return;
+      const fbUrl = normalizeFirebaseUrl(state.duo.firebaseUrl || DEFAULT_FIREBASE_URL);
+      if (!fbUrl || !state.duo.roomId || !state.duo.roomSecret) return;
+
+      const badge = document.getElementById('duo-sync-badge');
+      if (badge) badge.textContent = 'Buscando...';
+
+      try {
+        const res = await fetch(`${fbUrl}/duo_rooms/${state.duo.roomId}.json?t=${Date.now()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const record = await res.json();
+        if (!record) {
+          state.partnerSnapshot = null;
+          persistState();
+          renderDuoView();
+          if (!silent) showToast('Sala vazia ou revogada pela usuária principal');
+          return;
+        }
+        const decrypted = await decryptDuoPayload(record, state.duo.roomSecret, state.duo.roomId);
+        state.partnerSnapshot = decrypted;
+        state.duo.lastSyncedAt = Date.now();
+        persistState();
+        renderDuoView();
+        if (!silent) showToast('Painel Duo atualizado');
+      } catch (err) {
+        if (badge) badge.textContent = 'Erro leitura';
+        if (!silent) showToast('Falha ao ler/descriptografar dados do Firebase');
+      }
+    }
+
+    async function deleteDuoFromFirebase() {
+      const fbUrl = normalizeFirebaseUrl(state.duo.firebaseUrl || DEFAULT_FIREBASE_URL);
+      if (fbUrl && state.duo.roomId) {
+        try {
+          await fetch(`${fbUrl}/duo_rooms/${state.duo.roomId}.json`, { method: 'DELETE' });
+        } catch (_) {}
+      }
+      state.duo.roomId = null;
+      state.duo.roomSecret = null;
+      state.duo.lastSyncedAt = null;
+      persistState();
+      renderDuoView();
+      showToast('Sala revogada e apagada da nuvem');
+    }
+
+    function updateDuoSyncStatusUI() {
+      const isPartner = state.role === 'partner';
+      const hasRoom = !!(state.duo.roomId && state.duo.roomSecret);
+      const fbUrl = normalizeFirebaseUrl(state.duo.firebaseUrl || DEFAULT_FIREBASE_URL);
+
+      document.body.classList.toggle('partner-mode', isPartner);
+      document.querySelectorAll('.primary-only').forEach(el => {
+        el.style.display = isPartner ? 'none' : '';
+      });
+
+      document.getElementById('duo-primary-sync-box').style.display = isPartner ? 'none' : 'block';
+      document.getElementById('duo-partner-sync-box').style.display = isPartner ? 'block' : 'none';
+
+      const fbInput = document.getElementById('duo-fb-url');
+      if (fbInput && !fbInput.value && fbUrl) fbInput.value = fbUrl;
+
+      const unpairedBox = document.getElementById('duo-unpaired-actions');
+      const pairedBox = document.getElementById('duo-paired-actions');
+      if (unpairedBox && pairedBox) {
+        unpairedBox.style.display = hasRoom ? 'none' : 'block';
+        pairedBox.style.display = hasRoom ? 'block' : 'none';
+      }
+
+      if (hasRoom) {
+        document.getElementById('duo-pair-code-display').textContent = `MARE-${state.duo.roomId}-${state.duo.roomSecret}`;
+      }
+
+      const badge = document.getElementById('duo-sync-badge');
+      const statusText = document.getElementById('duo-sync-status');
+
+      if (!fbUrl || !hasRoom) {
+        badge.className = 'badge';
+        badge.textContent = 'Local';
+        statusText.textContent = 'Gere um código ou link para parear 2 celulares';
+      } else {
+        badge.className = 'badge live';
+        badge.textContent = 'E2EE Ativo';
+        const timeStr = state.duo.lastSyncedAt
+          ? new Date(state.duo.lastSyncedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+          : 'aguardando';
+        statusText.textContent = isPartner
+          ? `Sincronizado com o celular principal (última leitura: ${timeStr})`
+          : `Sala ${state.duo.roomId} ativa • Último envio: ${timeStr}`;
+      }
+    }
+
     function renderTodayView() {
+      if (state.role === 'partner') return;
       const analysis = getCycleAnalysis(activeDate);
       const isToday = activeDate === toISODate(new Date());
 
@@ -1624,7 +1991,7 @@
       document.getElementById('checkin-status-badge').textContent = state.entries[activeDate] ? 'Registrado ✓' : '~15 seg';
     }
 
-    function saveDailyEntry() {
+    async function saveDailyEntry() {
       const selectedLibidoBtn = document.querySelector('#libido-scale .libido-btn.selected');
       const libido = selectedLibidoBtn ? Number(selectedLibidoBtn.dataset.val) : 0;
       const selectedFlowChip = document.querySelector('#flow-chips .chip.active');
@@ -1635,66 +2002,84 @@
       persistState();
       renderAll();
       showToast('Registro salvo localmente');
+      await pushDuoToFirebase(true);
     }
 
     function renderDuoView() {
-      const isPaused = !!state.duo.paused;
+      updateDuoSyncStatusUI();
+
+      const isPartner = state.role === 'partner';
+      const snapshot = isPartner ? state.partnerSnapshot : buildDuoSnapshot();
+      const isPaused = isPartner ? !!(snapshot && snapshot.paused) : !!state.duo.paused;
+
       document.getElementById('duo-paused-card').style.display = isPaused ? 'block' : 'none';
       document.getElementById('duo-active-content').style.display = isPaused ? 'none' : 'block';
-      document.getElementById('duo-pause-btn').textContent = isPaused ? 'Reativar' : 'Pausar';
-      document.getElementById('duo-status-caption').textContent = isPaused
-        ? 'Compartilhamento pausado pela pessoa principal'
-        : 'Compartilhamento local ativo neste aparelho';
+
+      const pauseBtn = document.getElementById('duo-pause-btn');
+      if (pauseBtn) pauseBtn.textContent = isPaused ? 'Reativar envio' : 'Pausar envio';
 
       if (isPaused) return;
 
-      const todayStr = toISODate(new Date());
-      const analysis = getCycleAnalysis(todayStr);
-      const todayEntry = state.entries[todayStr] || { libido: 0, flow: 'none', tags: [] };
-      const todayTags = Array.isArray(todayEntry.tags) ? todayEntry.tags : [];
-      const perms = state.duo.permissions;
+      if (isPartner && !snapshot) {
+        document.getElementById('duo-climate-title').textContent = 'Aguardando primeira sincronização';
+        document.getElementById('duo-climate-desc').textContent = 'Toque em "Atualizar Agora" acima ou aguarde o envio da usuária principal.';
+        document.getElementById('duo-shared-details').innerHTML = '';
+        document.getElementById('duo-empathy-tip').textContent = 'Assim que os dados forem enviados, o clima do dia e o guia de empatia aparecerão aqui.';
+        document.getElementById('duo-forecast-strip').innerHTML = '';
+        document.getElementById('care-menu-chips').innerHTML = '';
+        document.getElementById('duo-plans-list').innerHTML = '';
+        return;
+      }
 
-      document.getElementById('perm-phase').checked = perms.phase;
-      document.getElementById('perm-libido').checked = perms.libido;
-      document.getElementById('perm-symptoms').checked = perms.symptoms;
+      const todayStr = toISODate(new Date());
+      const perms = snapshot.permissions || { phase: true, libido: true, symptoms: true };
+
+      if (!isPartner) {
+        document.getElementById('perm-phase').checked = state.duo.permissions.phase;
+        document.getElementById('perm-libido').checked = state.duo.permissions.libido;
+        document.getElementById('perm-symptoms').checked = state.duo.permissions.symptoms;
+      }
+
+      const phaseKey = snapshot.cycle ? snapshot.cycle.phaseKey : 'follicular';
+      const phaseName = snapshot.cycle ? snapshot.cycle.phaseName : '';
+      const libidoVal = snapshot.libido || 0;
+      const symptoms = Array.isArray(snapshot.symptoms) ? snapshot.symptoms : [];
 
       let climateTitle = 'Maré Calma';
       let climateDesc = 'Dia de ritmo equilibrado e conversa leve.';
       let empathyTip = 'Aproveite a estabilidade do dia para conexão simples, escuta e presença.';
 
-      if (analysis.phaseKey === 'ovulatory' || todayEntry.libido >= 4) {
+      if (phaseKey === 'ovulatory' || libidoVal >= 4) {
         climateTitle = 'Maré Alta';
         climateDesc = 'Energia, abertura e desejo mais presentes hoje.';
         empathyTip = 'A disposição e o interesse costumam estar mais altos. Bom momento para um encontro ou conexão a dois sem pressão.';
-      } else if (analysis.phaseKey === 'menstrual' || todayTags.includes('cramps') || todayTags.includes('fatigue')) {
+      } else if (phaseKey === 'menstrual' || symptoms.includes('Cólicas') || symptoms.includes('Fadiga')) {
         climateTitle = 'Maré Baixa';
         climateDesc = 'Possível recolhimento, cansaço ou sensibilidade física hoje.';
         empathyTip = 'Pode haver fluxo, cólica ou fadiga. Perguntar de forma aberta o que ajuda hoje costuma funcionar melhor do que adivinhar.';
-      } else if (analysis.phaseKey === 'luteal' || todayTags.includes('anxiety') || todayTags.includes('irritability')) {
+      } else if (phaseKey === 'luteal' || symptoms.includes('Ansiedade') || symptoms.includes('Irritabilidade')) {
         climateTitle = 'Maré de Afeto & Cuidado';
         climateDesc = 'Fase em que o corpo e o humor podem pedir mais acolhimento e previsibilidade.';
         empathyTip = 'Oscilações de energia e sensibilidade são comuns. Aliviar tarefas pendentes e manter um clima acolhedor faz diferença.';
       }
 
-      const activeSignal = state.duo.signalDate === todayStr ? state.duo.signal : null;
+      const activeSignal = snapshot.signalDate === todayStr ? snapshot.signal : null;
       if (activeSignal === 'in_the_mood') climateTitle = 'Maré Alta • Sinal: No Clima';
       else if (activeSignal === 'affection_only') climateTitle = 'Maré de Afeto • Carinho sem Sexo';
       else if (activeSignal === 'need_space') climateTitle = 'Maré Baixa • Espaço Hoje';
 
       document.getElementById('duo-climate-title').textContent = perms.phase ? climateTitle : 'Clima Compartilhado';
       document.getElementById('duo-climate-desc').textContent = perms.phase
-        ? `${climateDesc} (${analysis.phaseName})`
+        ? `${climateDesc} (${phaseName})`
         : 'Detalhes da fase ocultos por escolha de privacidade.';
 
       const details = [];
-      if (perms.libido && todayEntry.libido > 0) {
+      if (perms.libido && libidoVal > 0) {
         const libidoLabels = { 1: 'Nula', 2: 'Baixa', 3: 'Média', 4: 'Alta', 5: 'Intensa' };
-        details.push(`Termômetro de desejo: <strong>${libidoLabels[todayEntry.libido]} (${todayEntry.libido}/5)</strong>`);
+        details.push(`Termômetro de desejo: <strong>${libidoLabels[libidoVal]} (${libidoVal}/5)</strong>`);
       }
-      if (perms.symptoms && todayTags.length > 0) {
-        const allowedMap = { cramps: 'Cólicas', breast_tenderness: 'Seios sensíveis', bloating: 'Inchaço', headache: 'Dor de cabeça', high_energy: 'Alta energia', fatigue: 'Fadiga', anxiety: 'Ansiedade', irritability: 'Irritabilidade', good_mood: 'Disposição' };
-        const visible = todayTags.filter(t => allowedMap[t]).map(t => allowedMap[t]);
-        if (visible.length) details.push(`Marcadores liberados: <strong>${visible.join(', ')}</strong>`);
+      if (perms.symptoms && symptoms.length > 0) {
+        details.push(`Marcadores liberados: <strong>${symptoms.join(', ')}</strong>`);
       }
       document.getElementById('duo-shared-details').innerHTML = details.length
         ? details.join(' • ')
@@ -1702,48 +2087,74 @@
 
       document.getElementById('duo-empathy-tip').textContent = empathyTip;
 
+      document.getElementById('silent-signals-caption').textContent = isPartner
+        ? 'Sinal enviado hoje pela usuária principal (somente leitura):'
+        : 'Sinalize seu tom de proximidade hoje com leveza, sem cobrança de resposta imediata:';
+
       document.querySelectorAll('#silent-signals .signal-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.signal === activeSignal);
       });
 
+      const forecastContainer = document.getElementById('duo-forecast-strip');
+      const forecast = Array.isArray(snapshot.forecast14) ? snapshot.forecast14 : [];
+      forecastContainer.innerHTML = forecast.map(f => `
+        <div class="forecast-cell" style="border-color:${f.isOvulationDay ? f.phaseColor : 'transparent'}; background:${f.phaseColor}22;" title="${f.phaseName}">
+          <div style="font-weight:700; color:var(--text);">${f.dayNum}</div>
+          <div style="width:14px; height:3px; border-radius:99px; background:${f.phaseColor}; margin:3px auto 0;"></div>
+        </div>
+      `).join('');
+
       const careContainer = document.getElementById('care-menu-chips');
       careContainer.innerHTML = '';
-      state.duo.careItems.forEach(item => {
-        const chip = document.createElement('span');
-        chip.className = 'chip' + (state.duo.activeCareItems.includes(item) ? ' active' : '');
-        chip.dataset.careItem = item;
-        chip.textContent = item;
-        careContainer.appendChild(chip);
-      });
+      const careList = isPartner ? (snapshot.activeCareItems || []) : state.duo.careItems;
+      if (isPartner && !careList.length) {
+        careContainer.innerHTML = `<span style="font-size:0.78rem; color:var(--text-muted);">Nenhum item selecionado no momento.</span>`;
+      } else {
+        careList.forEach(item => {
+          const chip = document.createElement('span');
+          const isActive = isPartner ? true : state.duo.activeCareItems.includes(item);
+          chip.className = 'chip' + (isActive ? ' active' : '');
+          if (!isPartner) chip.dataset.careItem = item;
+          chip.textContent = item;
+          careContainer.appendChild(chip);
+        });
+      }
 
-      const planDateInput = document.getElementById('duo-plan-date');
-      if (!planDateInput.value) planDateInput.value = todayStr;
+      if (!isPartner) {
+        const planDateInput = document.getElementById('duo-plan-date');
+        if (planDateInput && !planDateInput.value) planDateInput.value = todayStr;
+      }
 
       const plansList = document.getElementById('duo-plans-list');
-      if (!state.duo.plans.length) {
+      const plans = snapshot.plans || [];
+      if (!plans.length) {
         plansList.innerHTML = `<p style="font-size:0.78rem; color:var(--text-muted); margin-top:8px;">Nenhum plano adicionado ainda.</p>`;
       } else {
-        plansList.innerHTML = state.duo.plans.map(p => {
-          const pAnalysis = getCycleAnalysis(p.date);
+        plansList.innerHTML = plans.map(p => {
           const dateFmt = parseISODate(p.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+          const removeBtn = !isPartner
+            ? `<button type="button" class="btn-secondary" style="padding:5px 9px; font-size:0.74rem;" data-remove-plan="${p.id}">×</button>`
+            : '';
           return `
             <div class="plan-item">
               <div>
                 <strong>${dateFmt} — ${p.title}</strong>
-                <div style="font-size:0.72rem; color:var(--text-muted);">Previsão do dia: ${pAnalysis.phaseName}</div>
+                ${p.phaseName ? `<div style="font-size:0.72rem; color:var(--text-muted);">Previsão do dia: ${p.phaseName}</div>` : ''}
               </div>
-              <button type="button" class="btn-secondary" style="padding:5px 9px; font-size:0.74rem;" data-remove-plan="${p.id}">×</button>
+              ${removeBtn}
             </div>
           `;
         }).join('');
       }
 
+      const mutualList = snapshot.mutualCare || [];
       document.querySelectorAll('#mutual-care-chips .chip').forEach(ch => {
-        ch.classList.toggle('active', state.duo.mutualCare.includes(ch.dataset.m));
+        ch.classList.toggle('active', mutualList.includes(ch.dataset.m));
       });
     }
 
     function renderCalendar() {
+      if (state.role === 'partner') return;
       const year = calCursor.getFullYear();
       const month = calCursor.getMonth();
       const monthName = calCursor.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
@@ -1776,7 +2187,6 @@
         if (dateStr === todayStr) cell.classList.add('today');
         if (dateStr === selectedCalDate) cell.classList.add('selected');
 
-        // Aplica estilo visual coerente com a fase fisiológica de cada dia do mês
         if (dayAnalysis.hasLoggedPeriod || dayAnalysis.hasLoggedSpotting) {
           cell.classList.add('phase-menstrual');
         } else if (dayAnalysis.phaseKey === 'menstrual') {
@@ -1837,6 +2247,7 @@
     }
 
     function renderInsightsView() {
+      if (state.role === 'partner') return;
       const sortedDates = Object.keys(state.entries || {}).sort().slice(-14);
       const chartContainer = document.getElementById('libido-chart-container');
 
@@ -1911,6 +2322,7 @@
     }
 
     function renderSettingsView() {
+      if (state.role === 'partner') return;
       document.getElementById('set-goal').value = state.settings.goal;
       document.getElementById('set-contraceptive').value = state.settings.contraceptive;
       document.getElementById('set-cycle-len').value = state.settings.defaultCycleLength || 28;
@@ -1932,11 +2344,12 @@
     }
 
     function applyDiscreetMode() {
-      const isDiscreet = state.settings.discreetMode === 'discreet';
-      document.getElementById('app-display-name').textContent = isDiscreet ? 'Notas' : 'Maré';
-      document.getElementById('app-subtitle').textContent = isDiscreet ? 'Bem-estar diário' : 'Ondas hormonais & libido';
+      const isPartner = state.role === 'partner';
+      const isDiscreet = !isPartner && state.settings.discreetMode === 'discreet';
+      document.getElementById('app-display-name').textContent = isPartner ? 'Maré Duo' : (isDiscreet ? 'Notas' : 'Maré');
+      document.getElementById('app-subtitle').textContent = isPartner ? 'Modo Parceiro(a) • E2EE' : (isDiscreet ? 'Bem-estar diário' : 'Ondas hormonais & libido');
       document.title = isDiscreet ? 'Notas Diárias' : 'Maré — Ciclo, Libido & Bem-Estar Íntimo';
-      document.getElementById('quick-lock-btn').style.display = state.settings.pinHash ? 'inline-flex' : 'none';
+      document.getElementById('quick-lock-btn').style.display = (!isPartner && state.settings.pinHash) ? 'inline-flex' : 'none';
     }
 
     async function sha256(text) {
@@ -2035,6 +2448,7 @@
     }
 
     function switchView(viewName) {
+      if (state.role === 'partner') viewName = 'duo';
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       const target = document.getElementById(`view-${viewName}`);
       if (target) target.classList.add('active');
@@ -2048,6 +2462,11 @@
     }
 
     function renderAll() {
+      if (state.role === 'partner') {
+        applyDiscreetMode();
+        switchView('duo');
+        return;
+      }
       const steps = [
         ['applyDiscreetMode', applyDiscreetMode],
         ['renderTodayView', renderTodayView],
@@ -2062,6 +2481,37 @@
         } catch (err) {
           reportRuntimeError(`Falha em ${name}: ${err && err.message ? err.message : err}`);
         }
+      }
+    }
+
+    function checkInviteHash() {
+      try {
+        const hash = window.location.hash || '';
+        if (!hash.startsWith('#pair=')) return false;
+        const raw = decodeURIComponent(hash.slice(6));
+        const data = JSON.parse(atob(raw));
+        const parsed = parsePairCode(data.code || '');
+        if (!parsed) return false;
+
+        state.onboarded = true;
+        state.role = 'partner';
+        state.duo.firebaseUrl = normalizeFirebaseUrl(data.fb || DEFAULT_FIREBASE_URL);
+        state.duo.roomId = parsed.roomId;
+        state.duo.roomSecret = parsed.secret;
+        persistState();
+
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function startPartnerAutoPoll() {
+      if (partnerPollTimer) clearInterval(partnerPollTimer);
+      if (state.role === 'partner') {
+        pullDuoFromFirebase(true);
+        partnerPollTimer = setInterval(() => pullDuoFromFirebase(true), 20000);
       }
     }
 
@@ -2093,6 +2543,10 @@
       }
 
       if (target.matches('#silent-signals .signal-btn')) {
+        if (state.role === 'partner') {
+          showToast('Somente a usuária principal altera o sinal do dia');
+          return;
+        }
         const signalKey = target.dataset.signal;
         const todayStr = toISODate(new Date());
         if (state.duo.signal === signalKey && state.duo.signalDate === todayStr) {
@@ -2105,33 +2559,43 @@
         persistState();
         renderDuoView();
         showToast('Sinal silencioso atualizado');
+        await pushDuoToFirebase(true);
         return;
       }
 
       if (target.dataset.careItem) {
+        if (state.role === 'partner') return;
         const item = target.dataset.careItem;
         const idx = state.duo.activeCareItems.indexOf(item);
         if (idx >= 0) state.duo.activeCareItems.splice(idx, 1);
         else state.duo.activeCareItems.push(item);
         persistState();
         renderDuoView();
+        await pushDuoToFirebase(true);
         return;
       }
 
       if (target.matches('#mutual-care-chips .chip')) {
+        if (state.role === 'partner') {
+          showToast('Item do checklist visualizado');
+          return;
+        }
         const m = target.dataset.m;
         const idx = state.duo.mutualCare.indexOf(m);
         if (idx >= 0) state.duo.mutualCare.splice(idx, 1);
         else state.duo.mutualCare.push(m);
         persistState();
         renderDuoView();
+        await pushDuoToFirebase(true);
         return;
       }
 
       if (target.dataset.removePlan) {
+        if (state.role === 'partner') return;
         state.duo.plans = state.duo.plans.filter(p => p.id !== target.dataset.removePlan);
         persistState();
         renderDuoView();
+        await pushDuoToFirebase(true);
         return;
       }
 
@@ -2176,12 +2640,12 @@
         const periodLen = Math.min(10, Math.max(2, Number(document.getElementById('ob-period-len').value) || 5));
 
         state.onboarded = true;
+        state.role = 'primary';
         state.settings.defaultCycleLength = cycleLen;
         state.settings.defaultPeriodLength = periodLen;
         state.settings.goal = document.getElementById('ob-goal').value;
         state.settings.contraceptive = document.getElementById('ob-contraceptive').value;
 
-        // Registra os dias iniciais da menstruação informada sem sobrescrever hoje se for posterior
         const startD = parseISODate(lastPeriodStr);
         const todayStr = toISODate(new Date());
         for (let i = 0; i < periodLen; i++) {
@@ -2197,14 +2661,77 @@
         obScreen.style.display = 'none';
         renderAll();
         showToast('Maré configurada localmente');
+      } else if (action === 'connect-partner-onboarding') {
+        const fbUrl = normalizeFirebaseUrl(document.getElementById('ob-fb-url').value || DEFAULT_FIREBASE_URL);
+        const parsed = parsePairCode(document.getElementById('ob-pair-code').value);
+        if (!parsed) {
+          showToast('Informe um código MARE-XXXX-YYYYYYYYYYYY válido');
+          return;
+        }
+        state.onboarded = true;
+        state.role = 'partner';
+        state.duo.firebaseUrl = fbUrl;
+        state.duo.roomId = parsed.roomId;
+        state.duo.roomSecret = parsed.secret;
+        persistState();
+
+        const obScreen = document.getElementById('onboarding-screen');
+        obScreen.classList.remove('active');
+        obScreen.style.display = 'none';
+        renderAll();
+        startPartnerAutoPoll();
       } else if (action === 'save-entry') {
-        saveDailyEntry();
+        await saveDailyEntry();
+      } else if (action === 'save-fb-url') {
+        const url = normalizeFirebaseUrl(document.getElementById('duo-fb-url').value);
+        if (!url.startsWith('https://')) {
+          showToast('Use uma URL https:// válida do Firebase');
+          return;
+        }
+        state.duo.firebaseUrl = url;
+        persistState();
+        updateDuoSyncStatusUI();
+        showToast('URL do Firebase salva');
+      } else if (action === 'generate-pair-room') {
+        const fbUrl = normalizeFirebaseUrl(document.getElementById('duo-fb-url').value || state.duo.firebaseUrl || DEFAULT_FIREBASE_URL);
+        state.duo.firebaseUrl = fbUrl;
+        state.duo.roomId = randomToken(6);
+        state.duo.roomSecret = randomToken(16);
+        state.duo.paused = false;
+        persistState();
+        renderDuoView();
+        await pushDuoToFirebase(false);
+      } else if (action === 'copy-pair-link') {
+        const fbUrl = normalizeFirebaseUrl(state.duo.firebaseUrl || DEFAULT_FIREBASE_URL);
+        const code = `MARE-${state.duo.roomId}-${state.duo.roomSecret}`;
+        const token = btoa(JSON.stringify({ fb: fbUrl, code }));
+        const baseUrl = window.location.origin + window.location.pathname;
+        const inviteUrl = `${baseUrl}#pair=${encodeURIComponent(token)}`;
+        try {
+          await navigator.clipboard.writeText(inviteUrl);
+          showToast('Link de convite Duo copiado!');
+        } catch (_) {
+          prompt('Copie o link de convite Duo:', inviteUrl);
+        }
+      } else if (action === 'sync-now') {
+        if (state.role === 'partner') await pullDuoFromFirebase(false);
+        else await pushDuoToFirebase(false);
+      } else if (action === 'revoke-pair-room') {
+        await deleteDuoFromFirebase();
+      } else if (action === 'disconnect-partner') {
+        if (partnerPollTimer) clearInterval(partnerPollTimer);
+        state = cloneDefaultState();
+        persistState();
+        location.reload();
       } else if (action === 'toggle-duo-pause') {
+        if (state.role === 'partner') return;
         state.duo.paused = !state.duo.paused;
         persistState();
         renderDuoView();
         showToast(state.duo.paused ? 'Visão Duo pausada' : 'Visão Duo reativada');
+        await pushDuoToFirebase(true);
       } else if (action === 'add-care-item') {
+        if (state.role === 'partner') return;
         const input = document.getElementById('new-care-item');
         const val = input.value.trim();
         if (!val) return;
@@ -2214,7 +2741,9 @@
         persistState();
         renderDuoView();
         showToast('Cuidado adicionado');
+        await pushDuoToFirebase(true);
       } else if (action === 'add-duo-plan') {
+        if (state.role === 'partner') return;
         const dateVal = document.getElementById('duo-plan-date').value;
         const titleVal = document.getElementById('duo-plan-title').value.trim();
         if (!dateVal || !titleVal) {
@@ -2227,6 +2756,7 @@
         persistState();
         renderDuoView();
         showToast('Plano salvo');
+        await pushDuoToFirebase(true);
       } else if (action === 'prev-month') {
         calCursor = new Date(calCursor.getFullYear(), calCursor.getMonth() - 1, 1);
         renderCalendar();
@@ -2273,7 +2803,11 @@
       const target = event.target;
       if (!target) return;
 
-      if (target.dataset.syncSettings === 'true') {
+      if (target.id === 'ob-role') {
+        const isPartnerRole = target.value === 'partner';
+        document.getElementById('ob-primary-fields').style.display = isPartnerRole ? 'none' : 'block';
+        document.getElementById('ob-partner-fields').style.display = isPartnerRole ? 'block' : 'none';
+      } else if (target.dataset.syncSettings === 'true') {
         state.settings.goal = document.getElementById('set-goal').value;
         state.settings.contraceptive = document.getElementById('set-contraceptive').value;
         state.settings.defaultCycleLength = Math.min(60, Math.max(18, Number(document.getElementById('set-cycle-len').value) || 28));
@@ -2283,6 +2817,7 @@
         persistState();
         renderAll();
         showToast('Preferências atualizadas');
+        await pushDuoToFirebase(true);
       } else if (target.id === 'perm-phase' || target.id === 'perm-libido' || target.id === 'perm-symptoms') {
         state.duo.permissions.phase = document.getElementById('perm-phase').checked;
         state.duo.permissions.libido = document.getElementById('perm-libido').checked;
@@ -2290,6 +2825,7 @@
         persistState();
         renderDuoView();
         showToast('Permissões Duo atualizadas');
+        await pushDuoToFirebase(true);
       } else if (target.id === 'import-backup-file') {
         await importEncryptedBackup(event);
       }
@@ -2320,6 +2856,8 @@
 
     (function init() {
       initKeypad();
+      checkInviteHash();
+
       const obDate = document.getElementById('ob-last-period');
       if (obDate && !obDate.value) obDate.value = toISODate(new Date());
 
@@ -2334,11 +2872,17 @@
         obScreen.style.display = 'none';
       }
 
-      if (state && state.settings && state.settings.pinHash) {
+      if (state && state.role === 'primary' && state.settings && state.settings.pinHash) {
         lockAppNow();
       }
 
       renderAll();
+
+      if (state.role === 'partner') {
+        startPartnerAutoPoll();
+      } else if (state.duo.roomId && state.duo.roomSecret && state.duo.firebaseUrl) {
+        pushDuoToFirebase(true);
+      }
     })();
   </script>
 </body>
