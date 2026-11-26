@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mare-app-cache-v1';
+const CACHE_NAME = 'mare-app-cache-v2';
 const BASE_PATH = '/mare-app';
 
 const ASSETS_TO_CACHE = [
@@ -7,7 +7,6 @@ const ASSETS_TO_CACHE = [
   `${BASE_PATH}/manifest.json`
 ];
 
-// Instalação: armazena os arquivos essenciais do subcaminho no cache
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
@@ -15,7 +14,6 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Ativação: remove versões antigas do cache
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) =>
@@ -29,7 +27,6 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch: estratégia Cache-First com fallback para rede (funciona 100% offline)
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
